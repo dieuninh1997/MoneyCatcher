@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">MoneyCatcher</string>
+    <string name="home_screen">Home\n</string>
+    <string name="report_screen">Report\n</string>
+    <string name="add_new_screen">Add</string>
+    <string name="calendar_screen">Calendar</string>
+    <string name="others_screen">Others\n</string>
+    <string name="currency_usd">USD</string>
+    <string name="currency_vnd">VND\n</string>
+    <string name="settings_group">Group</string>
+    <string name="outcome">Outcome</string>
+    <string name="income">Income</string>
+</resources>
