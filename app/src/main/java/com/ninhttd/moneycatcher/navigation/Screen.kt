@@ -6,6 +6,8 @@ import com.ninhttd.moneycatcher.R
 sealed class Screen(val route: String) {
     data object Login: Screen("login_screen")
     data object Details: Screen("details_screen")
+    data object VoiceNote: Screen("voice_note_screen")
+    data object ManualNote: Screen("manual_note_screen")
     data object Settings: Screen("settings_screen")
     data object NavigationBar: Screen("navigation_bar_screen")
 }

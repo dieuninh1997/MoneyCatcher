@@ -33,9 +33,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.ninhttd.moneycatcher.ui.screen.add.AddNewScreen
 import com.ninhttd.moneycatcher.ui.screen.add.OthersScreen
 import com.ninhttd.moneycatcher.ui.screen.add.ReportScreen
+import com.ninhttd.moneycatcher.ui.screen.add.component.AddNewScreen
 import com.ninhttd.moneycatcher.ui.screen.calendar.CalendarScreen
 import com.ninhttd.moneycatcher.ui.screen.home.HomeScreen
 import kotlinx.collections.immutable.persistentListOf
@@ -67,11 +67,16 @@ fun NavigationBarScaffold(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { navController.navigate(NavigationBarScreen.Add.route) },
-                contentColor = Color(0xFF2196F3),
+                contentColor = Color.DarkGray,
+                backgroundColor = Color.DarkGray,
                 shape = CircleShape,
                 elevation = FloatingActionButtonDefaults.elevation(8.dp)
             ) {
-                Icon(Icons.Default.Add, contentDescription = "Add", tint = Color.White)
+                Icon(
+                    Icons.Default.Add,
+                    contentDescription = "Add",
+                    tint = if (currentDestination?.route == NavigationBarScreen.Add.route) Color.White else Color.Gray
+                )
             }
         },
         floatingActionButtonPosition = FabPosition.Center,
@@ -81,6 +86,9 @@ fun NavigationBarScaffold(
             navController,
             startScreen = NavigationBarScreen.Home,
             onNavigateDetails = {},
+            onNavigateNote = {route ->
+                navController.navigate(route)
+            },
             onNavigateSettings = {},
             modifier = Modifier.padding(innerPadding)
         )
@@ -136,13 +144,18 @@ fun BottomBarWithFab(navController: NavHostController, modifier: Modifier = Modi
                     onClick = { navController.navigate(item.route) },
                     icon = {
                         item.iconRes?.let {
-                            Icon(it, contentDescription = null)
+                            Icon(
+                                it,
+                                contentDescription = null,
+                                tint = if (currentRoute == item.route) Color.White else Color.Gray
+                            )
                         }
                     },
                     label = {
                         Text(
                             text = item.label?.let { stringResource(item.label) } ?: "",
-                            fontSize = 11.sp
+                            fontSize = 11.sp,
+                            color = if (currentRoute == item.route) Color.White else Color.Gray
                         )
                     },
                     alwaysShowLabel = true
@@ -158,6 +171,7 @@ private fun NavigationBarNavHost(
     navController: NavHostController,
     startScreen: NavigationBarScreen,
     onNavigateDetails: (String) -> Unit,
+    onNavigateNote: (String) -> Unit,
     onNavigateSettings: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -181,10 +195,7 @@ private fun NavigationBarNavHost(
             )
         }
         composable(route = NavigationBarScreen.Add.route) {
-            AddNewScreen(
-                onNavigateDetails = onNavigateDetails,
-                onNavigateSettings = onNavigateSettings
-            )
+            AddNewScreen(onNavigateNote = onNavigateNote)
         }
         composable(route = NavigationBarScreen.Report.route) {
             ReportScreen(

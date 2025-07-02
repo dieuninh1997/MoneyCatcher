@@ -2,7 +2,6 @@ package com.ninhttd.moneycatcher.ui.screen.add
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ninhttd.moneycatcher.ui.screen.add.component.AddNewTab
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,7 +20,7 @@ class AddNewiewModel @Inject constructor(): ViewModel() {
         //TODO
     }
 
-    fun updateAddNewTab(addTab: AddNewTab) {
+    fun updateAddNewTab() {
         //TODO
     }
 }

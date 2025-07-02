@@ -103,6 +103,10 @@ dependencies {
 
     // Immutable collections
     implementation(libs.kotlinx.collections.immutable)
+
+    //accompanist pager
+    implementation (libs.accompanist.pager)
+    implementation (libs.accompanist.pager.indicators)
 }
 
 fun getApiKey(): String {
