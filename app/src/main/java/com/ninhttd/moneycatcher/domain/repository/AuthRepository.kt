@@ -1,8 +1,8 @@
 package com.ninhttd.moneycatcher.domain.repository
 
-import com.ninhttd.moneycatcher.domain.model.User
+import io.github.jan.supabase.auth.user.UserInfo
 
 interface AuthRepository {
-    suspend fun login(email: String, password: String) : Result<User>
+    suspend fun login(email: String, password: String) : Result<UserInfo?>
 
 }

@@ -21,6 +21,7 @@ import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Message
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Category
@@ -96,7 +97,7 @@ fun FABGroup(modifier: Modifier = Modifier, onNavigateNote: (String) -> Unit) {
             },
             contentColor = Color.Blue
         ) {
-            Icon(Icons.Default.Message, contentDescription = null, tint = Color.White)
+            Icon(Icons.AutoMirrored.Filled.Message, contentDescription = null, tint = Color.White)
         }
     }
 }

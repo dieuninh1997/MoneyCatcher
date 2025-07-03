@@ -1,9 +1,14 @@
 package com.ninhttd.moneycatcher.ui.screen.login
 
+import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ninhttd.moneycatcher.domain.usecase.LoginUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.jan.supabase.auth.user.UserInfo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -16,6 +21,8 @@ class LoginViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Idle)
     val uiState: StateFlow<LoginUiState> = _uiState
 
+    var userState by mutableStateOf<UserInfo?>(null)
+
 
     init {
         initialiseUiState()
@@ -25,16 +32,22 @@ class LoginViewModel @Inject constructor(
         //TODO
     }
 
-    fun login(email: String, password: String) {
+    fun reset() {
+        _uiState.value = LoginUiState.Idle
+    }
 
+    fun login(email: String, password: String) {
         viewModelScope.launch {
             _uiState.value = LoginUiState.Loading
-            val res = loginUseCase(email, password)
-            _uiState.value = if (res.isSuccess) {
-                LoginUiState.Success(res.getOrNull()!!)
+            val result = loginUseCase(email, password)
+            userState = result.getOrNull()
+            _uiState.value = if (result.isSuccess) {
+                LoginUiState.Success(result)
             } else {
-                LoginUiState.Error(res.exceptionOrNull()?.message ?: "unknow error")
+                LoginUiState.Error(result.exceptionOrNull()?.message ?: "unknow error")
             }
         }
     }
+
+
 }

@@ -79,7 +79,7 @@ fun TransactionContent(
     val incomeCategories = listOf(
         Category("Lương", Icons.Default.AttachMoney),
         Category("Thưởng", Icons.Default.Star),
-        Category("Đầu tư", Icons.Default.TrendingUp),
+        Category("Đầu tư", Icons.AutoMirrored.Filled.TrendingUp),
         Category("Bán hàng", Icons.Default.ShoppingCart),
         Category("Khác", Icons.Default.MoreHoriz)
     )

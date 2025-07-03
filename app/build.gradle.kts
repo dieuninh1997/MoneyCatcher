@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
+    kotlin("plugin.serialization") version "2.0.21"
 }
 
 android {
@@ -14,7 +15,7 @@ android {
 
     defaultConfig {
         applicationId = "com.ninhttd.moneycatcher"
-        minSdk = 24
+        minSdk = 30
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -107,6 +108,13 @@ dependencies {
     //accompanist pager
     implementation (libs.accompanist.pager)
     implementation (libs.accompanist.pager.indicators)
+
+    // Supabase Integration - using the latest BOM version for Supabase libraries
+    implementation(platform("io.github.jan-tennert.supabase:bom:3.1.3"))
+    implementation("io.github.jan-tennert.supabase:postgrest-kt") // No change
+    implementation("io.github.jan-tennert.supabase:auth-kt") // No change
+    // Ktor Client - updated to the latest version compatible with Kotlin 2.0.0
+    implementation("io.ktor:ktor-client-android:3.0.0")
 }
 
 fun getApiKey(): String {
