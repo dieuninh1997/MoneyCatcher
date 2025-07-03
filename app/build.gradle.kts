@@ -21,7 +21,14 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "API_KEY", getApiKey())
+
+        val properties = Properties().apply {
+            load(rootProject.file("local.properties").inputStream())
+        }
+
+        buildConfigField("String", "SUPABASE_ANON_KEY", "\"${properties.getProperty("SUPABASE_ANON_KEY")}\"")
+        buildConfigField("String", "SUPABASE_URL", "\"${properties.getProperty("SUPABASE_URL")}\"")
+        buildConfigField("String", "API_KEY","\"${properties.getProperty("API_KEY")}\"")
     }
 
     buildTypes {
@@ -117,11 +124,3 @@ dependencies {
     implementation("io.ktor:ktor-client-android:3.0.0")
 }
 
-fun getApiKey(): String {
-    val apiKeyFile = rootProject.file("apikey.properties")
-
-    val apikeyProperties = Properties()
-    apikeyProperties.load(apiKeyFile.inputStream())
-
-    return apikeyProperties.getProperty("API_KEY")
-}

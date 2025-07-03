@@ -34,11 +34,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.ninhttd.moneycatcher.domain.model.Category
 import java.time.LocalDate
 
 
 data class Wallet(val name: String, val isDefault: Boolean, val money: Long)
-data class Category(val name: String, val icon: ImageVector)
+//data class Category(val name: String, val icon: ImageVector)
 
 fun formatMoney(amount: Long): String {
     val formatter = DecimalFormat("#,###")
@@ -63,36 +64,29 @@ fun formatVietnameseDate(date: LocalDate): String {
 }
 
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun TransactionContent(
     wallet: Wallet,
     date: String,
-    categories: List<Category>,
+    categoriesList: List<Category>?,
     onSubmit: (note: String, amount: String, category: Category?) -> Unit,
+    onNavigateEditCategory: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var note by remember { mutableStateOf("") }
     var money by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf<Category?>(null) }
     var selectedDate by remember { mutableStateOf(LocalDate.now()) }
-    val incomeCategories = listOf(
-        Category("Lương", Icons.Default.AttachMoney),
-        Category("Thưởng", Icons.Default.Star),
-        Category("Đầu tư", Icons.AutoMirrored.Filled.TrendingUp),
-        Category("Bán hàng", Icons.Default.ShoppingCart),
-        Category("Khác", Icons.Default.MoreHoriz)
-    )
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 72.dp)
+            .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 50.dp)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 72.dp)
+                .padding(bottom = 16.dp)
                 .verticalScroll(rememberScrollState()),
         ) {
 
@@ -115,11 +109,12 @@ fun TransactionContent(
             })
             Spacer(modifier = Modifier.height(5.dp))
             CategoryPickerRow(
-                incomeCategories,
+                categoriesList,
                 selectedCategory = selectedCategory,
                 onCategorySelected = {
                     selectedCategory = it
-                }
+                },
+                onNavigateEditCategory = onNavigateEditCategory
             )
         }
 
@@ -134,21 +129,4 @@ fun TransactionContent(
             Text("Gửi", fontWeight = FontWeight.Bold)
         }
     }
-}
-
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview(showBackground = true)
-@Composable
-private fun TransactionContentPreview() {
-    TransactionContent(
-        Wallet("Vi 1", false, 27_000_000L),
-        "02-07-2025",
-        listOf(
-            Category("An uong", Icons.Default.Category)
-        ),
-        onSubmit = { note, amount, category ->
-            //TODO
-        },
-    )
 }

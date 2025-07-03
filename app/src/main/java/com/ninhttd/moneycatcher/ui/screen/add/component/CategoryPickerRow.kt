@@ -3,11 +3,9 @@ package com.ninhttd.moneycatcher.ui.screen.add.component
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,6 +20,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.Card
@@ -37,13 +36,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.ninhttd.moneycatcher.domain.model.Category
 import timber.log.Timber
 
 @Composable
 fun CategoryPickerRow(
-    categories: List<Category>,
+    categories: List<Category>?,
     selectedCategory: Category?,
     onCategorySelected: (Category) -> Unit,
+    onNavigateEditCategory: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var isShowGrid by remember { mutableStateOf(true) }
@@ -59,7 +60,10 @@ fun CategoryPickerRow(
                 contentColor = Color.DarkGray,
             )
         ) {
-            Text("Danh mục: ${selectedCategory?.name}" ?: "Chọn danh mục", color = Color.White)
+            Text(
+                "Danh mục: ${selectedCategory?.name ?: ""}" ?: "Chọn danh mục",
+                color = Color.White
+            )
             Spacer(modifier = Modifier.weight(1f))
             Icon(
                 imageVector = if (isShowGrid) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
@@ -67,31 +71,29 @@ fun CategoryPickerRow(
                 tint = Color.White
             )
         }
-        Timber.tag("CategoryGrid").d("Size: ${categories.size}")
+        Timber.tag("CategoryGrid").d("Size: ${categories?.size}")
 
         if (isShowGrid) {
             LazyVerticalGrid(
-                columns = GridCells.Fixed(3),
+                columns = GridCells.Fixed(4),
                 modifier = Modifier
                     .fillMaxSize()
-                    .heightIn(max = 240.dp)
+                    .heightIn(max = 350.dp)
                     .background(Color.White),
                 contentPadding = PaddingValues(4.dp)
             ) {
-                items(categories.size) { index ->
-                    val category = categories[index]
-                    val isSelected = category.name == selectedCategory?.name
+                item() {
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .heightIn(max = 80.dp)
                             .padding(6.dp)
                             .clickable {
-                                onCategorySelected(category)
-                                isShowGrid = false
+                                onNavigateEditCategory.invoke()
                             },
                         shape = RoundedCornerShape(12.dp),
                         colors = CardDefaults.cardColors(
-                            containerColor = if (isSelected) Color.Blue else Color.LightGray
+                            containerColor = Color.LightGray
                         )
                     ) {
                         Column(
@@ -102,18 +104,53 @@ fun CategoryPickerRow(
                             verticalArrangement = Arrangement.Center
                         ) {
                             Icon(
-                                imageVector = category.icon,
-                                contentDescription = category.name,
-                                tint = if (isSelected) Color.White else Color.DarkGray,
+                                imageVector = Icons.Default.Add,
+                                contentDescription = null,
+                                tint = Color.DarkGray,
                                 modifier = Modifier.size(24.dp)
                             )
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                text = category.name,
-                                fontSize = 12.sp,
-                                color = if (isSelected) Color.White else Color.DarkGray,
-                                textAlign = TextAlign.Center
+                        }
+                    }
+                }
+                categories?.let {
+                    items(categories.size) { index ->
+                        val category = categories[index]
+                        val isSelected = category.name == selectedCategory?.name
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(max = 80.dp)
+                                .padding(6.dp)
+                                .clickable {
+                                    onCategorySelected(category)
+                                    isShowGrid = false
+                                },
+                            shape = RoundedCornerShape(12.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = if (isSelected) Color.Blue else Color.LightGray
                             )
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(8.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                Text(
+                                    text = category.icon,
+                                    fontSize = 24.sp,
+                                    color = if (isSelected) Color.White else Color.DarkGray,
+                                    textAlign = TextAlign.Center
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = category.name,
+                                    fontSize = 12.sp,
+                                    color = if (isSelected) Color.White else Color.DarkGray,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
                         }
                     }
                 }

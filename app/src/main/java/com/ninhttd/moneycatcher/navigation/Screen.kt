@@ -9,6 +9,7 @@ sealed class Screen(val route: String) {
     data object VoiceNote: Screen("voice_note_screen")
     data object ManualNote: Screen("manual_note_screen")
     data object Settings: Screen("settings_screen")
+    data object EditCategory: Screen("edit_category_screen")
     data object NavigationBar: Screen("navigation_bar_screen")
 }
 

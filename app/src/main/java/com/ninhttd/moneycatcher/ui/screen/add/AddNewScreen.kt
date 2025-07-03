@@ -1,7 +1,5 @@
 package com.ninhttd.moneycatcher.ui.screen.add.component
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,36 +15,33 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
-import androidx.compose.material.Tab
-import androidx.compose.material.TabRow
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Message
-import androidx.compose.material.icons.filled.ArrowDownward
-import androidx.compose.material.icons.filled.ArrowUpward
-import androidx.compose.material.icons.filled.Category
-import androidx.compose.material.icons.filled.Message
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.ninhttd.moneycatcher.domain.model.Category
 import com.ninhttd.moneycatcher.navigation.Screen
-import kotlinx.collections.immutable.ImmutableList
+import com.ninhttd.moneycatcher.ui.screen.add.AddNewiewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun AddNewScreen(modifier: Modifier = Modifier, onNavigateNote: (String) -> Unit) {
-    val tabs = listOf(
-        TabItem("Chi tiêu", Icons.Default.ArrowUpward),
-        TabItem("Thu nhập", Icons.Default.ArrowDownward)
-    )
+fun AddNewScreen(
+    onNavigateNote: (String) -> Unit,
+    onNavigateEditCategory: () -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: AddNewiewModel = hiltViewModel()
+) {
+
+    val categoriesList = viewModel.categoriesList.collectAsState(initial = listOf()).value
     val pagerState = rememberPagerState(
         initialPage = 1,
         pageCount = { 2 }
@@ -66,8 +61,11 @@ fun AddNewScreen(modifier: Modifier = Modifier, onNavigateNote: (String) -> Unit
                 coroutineScope.launch {
                     pagerState.animateScrollToPage(index)
                 }
-            }, tabs=tabs,
-            pagerState = pagerState
+            },
+            categoriesList = categoriesList,
+            pagerState = pagerState,
+            onNavigateEditCategory = onNavigateEditCategory
+
         )
 
         FABGroup(onNavigateNote = onNavigateNote, modifier = Modifier.align(Alignment.BottomEnd))
@@ -102,92 +100,72 @@ fun FABGroup(modifier: Modifier = Modifier, onNavigateNote: (String) -> Unit) {
     }
 }
 
-data class TabItem(val title: String, val icon: ImageVector)
 
 @Composable
 fun MainContent(
     selectedIndex: Int,
-    tabs: List<TabItem>,
     onTabSelected: (Int) -> Unit,
     pagerState: PagerState,
+    categoriesList: List<Category>?,
     modifier: Modifier = Modifier,
+    onNavigateEditCategory: () -> Unit
 ) {
     Column {
         //tabs
-        TabRow(
-            selectedTabIndex = selectedIndex,
-            contentColor = Color.White,
-            backgroundColor = Color.DarkGray
-        ) {
-            tabs.forEachIndexed { index, tab ->
-                Tab(
-                    selected = selectedIndex == index,
-                    onClick = {
-                        onTabSelected(index)
-                    },
-                    text = {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Icon(
-                                imageVector = tab.icon,
-                                contentDescription = tab.title,
-                                tint = if (selectedIndex == index) Color.Red else Color.White
-                            )
-                            Text(
-                                text = tab.title,
-                                fontSize = 12.sp,
-                                color = if (selectedIndex == index) Color.Red else Color.White
-                            )
-                        }
-                    }
-                )
-            }
-        }
-
+        ExpenseIncomeTab(
+            selectedIndex = selectedIndex,
+            onTabSelected = onTabSelected
+        )
         HorizontalPager(
             pageSize = PageSize.Fill,
             state = pagerState,
             modifier = Modifier.weight(1f)
         ) { page ->
             when (page) {
-                0 -> ExpenseContent()
-                1 -> IncomeContent()
+                0 -> ExpenseContent(categoriesList, onNavigateEditCategory = onNavigateEditCategory)
+                1 -> IncomeContent(categoriesList, onNavigateEditCategory = onNavigateEditCategory)
             }
         }
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
+
 @Composable
-fun IncomeContent(modifier: Modifier = Modifier) {
+fun IncomeContent(
+    categoriesList: List<Category>?,
+    modifier: Modifier = Modifier,
+    onNavigateEditCategory: () -> Unit
+) {
     TransactionContent(
         Wallet("Vi 1", false, 27_000_000L),
         "02-07-2025",
-        listOf(
-            Category("An uong", Icons.Default.Category)
-        ),
+        categoriesList,
         onSubmit = { note, amount, category ->
             //TODO
         },
+        onNavigateEditCategory = onNavigateEditCategory
     )
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ExpenseContent(modifier: Modifier = Modifier) {
+fun ExpenseContent(
+    categoriesList: List<Category>?,
+    modifier: Modifier = Modifier,
+    onNavigateEditCategory: () -> Unit
+) {
     TransactionContent(
         Wallet("Vi 1", false, 27_000_000L),
         "02-07-2025",
-        listOf(
-            Category("An uong", Icons.Default.Category)
-        ),
+        categoriesList,
         onSubmit = { note, amount, category ->
             //TODO
         },
+        onNavigateEditCategory = onNavigateEditCategory
     )
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun AddNewScreenPreview() {
-    AddNewScreen(onNavigateNote = {})
+    AddNewScreen(onNavigateNote = {}, onNavigateEditCategory = {})
 }

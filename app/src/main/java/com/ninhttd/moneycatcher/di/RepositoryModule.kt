@@ -1,20 +1,28 @@
 package com.ninhttd.moneycatcher.di
 
 import com.ninhttd.moneycatcher.data.AuthRepositoryImpl
-import com.ninhttd.moneycatcher.data.remote.AuthApi
+import com.ninhttd.moneycatcher.data.CategoryRepositoryImpl
 import com.ninhttd.moneycatcher.domain.repository.AuthRepository
+import com.ninhttd.moneycatcher.domain.repository.CategoryRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import io.github.jan.supabase.auth.Auth
+import io.github.jan.supabase.postgrest.Postgrest
 
 @Module
 @InstallIn(SingletonComponent::class)
 object RepositoryModule {
 
     @Provides
-    fun provideAuthRepository(api: AuthApi): AuthRepository {
-        return AuthRepositoryImpl(api)
+    fun provideAuthRepository(auth: Auth): AuthRepository {
+        return AuthRepositoryImpl(auth)
+    }
+
+    @Provides
+    fun provideCategoryRepository(postgrest: Postgrest): CategoryRepository {
+        return CategoryRepositoryImpl(postgrest)
     }
 
 }

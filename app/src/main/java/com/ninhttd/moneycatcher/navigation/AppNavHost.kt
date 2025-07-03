@@ -20,7 +20,7 @@ fun AppNavHost(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Login.route,
+        startDestination = Screen.NavigationBar.route,
         enterTransition = {EnterTransition.None},
         exitTransition = { ExitTransition.None}
     ){

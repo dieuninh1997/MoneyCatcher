@@ -3,17 +3,15 @@ package com.ninhttd.moneycatcher.data
 import android.content.Context
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.net.toUri
-import com.ninhttd.moneycatcher.data.remote.AuthApi
-import com.ninhttd.moneycatcher.di.provider.SupabaseClientProvider
 import com.ninhttd.moneycatcher.domain.repository.AuthRepository
-import io.github.jan.supabase.auth.auth
+import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.auth.providers.builtin.Email
 import io.github.jan.supabase.auth.user.UserInfo
 import timber.log.Timber
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
-    api: AuthApi
+    private val auth: Auth
 ) : AuthRepository {
     override suspend fun login(email: String, password: String): Result<UserInfo?> {
         return try {
@@ -26,7 +24,6 @@ class AuthRepositoryImpl @Inject constructor(
 
 
     private suspend fun loginOrSignUp(email: String, password: String): UserInfo? {
-        val auth = SupabaseClientProvider.client.auth
         return try {
             auth.signInWith(Email) {
                 this.email = email

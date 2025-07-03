@@ -84,12 +84,15 @@ fun NavigationBarScaffold(
     ) { innerPadding ->
         NavigationBarNavHost(
             navController,
-            startScreen = NavigationBarScreen.Home,
+            startScreen = NavigationBarScreen.Add,
             onNavigateDetails = {},
-            onNavigateNote = {route ->
+            onNavigateNote = { route ->
                 navController.navigate(route)
             },
             onNavigateSettings = {},
+            onNavigateEditCategory = {
+                navController.navigate(Screen.EditCategory)
+            },
             modifier = Modifier.padding(innerPadding)
         )
     }
@@ -173,6 +176,7 @@ private fun NavigationBarNavHost(
     onNavigateDetails: (String) -> Unit,
     onNavigateNote: (String) -> Unit,
     onNavigateSettings: () -> Unit,
+    onNavigateEditCategory: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     NavHost(
@@ -195,7 +199,10 @@ private fun NavigationBarNavHost(
             )
         }
         composable(route = NavigationBarScreen.Add.route) {
-            AddNewScreen(onNavigateNote = onNavigateNote)
+            AddNewScreen(
+                onNavigateNote = onNavigateNote,
+                onNavigateEditCategory = onNavigateEditCategory
+            )
         }
         composable(route = NavigationBarScreen.Report.route) {
             ReportScreen(
