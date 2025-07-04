@@ -2,8 +2,10 @@ package com.ninhttd.moneycatcher.di
 
 import com.ninhttd.moneycatcher.data.AuthRepositoryImpl
 import com.ninhttd.moneycatcher.data.CategoryRepositoryImpl
+import com.ninhttd.moneycatcher.data.WalletRepositoryImpl
 import com.ninhttd.moneycatcher.domain.repository.AuthRepository
 import com.ninhttd.moneycatcher.domain.repository.CategoryRepository
+import com.ninhttd.moneycatcher.domain.repository.WalletRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,6 +25,12 @@ object RepositoryModule {
     @Provides
     fun provideCategoryRepository(postgrest: Postgrest): CategoryRepository {
         return CategoryRepositoryImpl(postgrest)
+    }
+
+
+    @Provides
+    fun provideWalletRepository(postgrest: Postgrest): WalletRepository {
+        return WalletRepositoryImpl(postgrest)
     }
 
 }

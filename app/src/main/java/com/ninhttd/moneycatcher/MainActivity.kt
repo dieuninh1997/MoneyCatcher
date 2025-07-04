@@ -1,28 +1,49 @@
 package com.ninhttd.moneycatcher
 
-import android.app.ComponentCaller
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import com.ninhttd.moneycatcher.navigation.AppNavHost
+import com.ninhttd.moneycatcher.navigation.Screen
+import com.ninhttd.moneycatcher.ui.screen.splash.SplashViewModel
 import com.ninhttd.moneycatcher.ui.theme.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private var isReadyToNavigate by mutableStateOf(false)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        installSplashScreen()
+        val splashScreen = installSplashScreen()
+
+        splashScreen.setKeepOnScreenCondition {
+            !isReadyToNavigate
+        }
 
         setContent {
             val navController = rememberNavController()
+            val splashViewModel: SplashViewModel = hiltViewModel()
+            val isUserLoggedIn = splashViewModel.isUserLoggedIn
+
+            LaunchedEffect(isUserLoggedIn) {
+                if (isUserLoggedIn != null) {
+                    navController.navigate(if (isUserLoggedIn) Screen.NavigationBar.route else Screen.Login.route) {
+                        popUpTo(0)
+                    }
+                    isReadyToNavigate = true
+                }
+            }
 
             AppTheme(navController = navController) {
                 val viewModel: MainActivityViewModel = hiltViewModel()

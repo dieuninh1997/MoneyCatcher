@@ -36,8 +36,11 @@ import androidx.navigation.compose.rememberNavController
 import com.ninhttd.moneycatcher.ui.screen.add.OthersScreen
 import com.ninhttd.moneycatcher.ui.screen.add.ReportScreen
 import com.ninhttd.moneycatcher.ui.screen.add.component.AddNewScreen
+import com.ninhttd.moneycatcher.ui.screen.addwallet.AddWalletScreen
 import com.ninhttd.moneycatcher.ui.screen.calendar.CalendarScreen
+import com.ninhttd.moneycatcher.ui.screen.editcategory.EditCategoryScreen
 import com.ninhttd.moneycatcher.ui.screen.home.HomeScreen
+import com.ninhttd.moneycatcher.ui.screen.wallet.WalletScreen
 import kotlinx.collections.immutable.persistentListOf
 
 @Composable
@@ -85,13 +88,15 @@ fun NavigationBarScaffold(
         NavigationBarNavHost(
             navController,
             startScreen = NavigationBarScreen.Add,
-            onNavigateDetails = {},
+            onNavigateDetails = { route ->
+                navController.navigate(route)
+            },
             onNavigateNote = { route ->
                 navController.navigate(route)
             },
             onNavigateSettings = {},
             onNavigateEditCategory = {
-                navController.navigate(Screen.EditCategory)
+                navController.navigate(Screen.EditCategory.route)
             },
             modifier = Modifier.padding(innerPadding)
         )
@@ -201,7 +206,8 @@ private fun NavigationBarNavHost(
         composable(route = NavigationBarScreen.Add.route) {
             AddNewScreen(
                 onNavigateNote = onNavigateNote,
-                onNavigateEditCategory = onNavigateEditCategory
+                onNavigateEditCategory = onNavigateEditCategory,
+                onNavigateDetails = onNavigateDetails
             )
         }
         composable(route = NavigationBarScreen.Report.route) {
@@ -213,8 +219,24 @@ private fun NavigationBarNavHost(
         composable(route = NavigationBarScreen.Others.route) {
             OthersScreen(
                 onNavigateDetails = onNavigateDetails,
-                onNavigateSettings = onNavigateSettings
             )
+        }
+        composable(route = Screen.EditCategory.route) {
+            EditCategoryScreen(
+                onNavigateUp = { navController.navigateUp() },
+                onNavigateDetails = onNavigateDetails
+            )
+        }
+        composable(route = Screen.Wallet.route) {
+            WalletScreen(
+                onNavigateUp = { navController.navigateUp() },
+                onNavigateDetails = onNavigateDetails
+            )
+        }
+        composable(route = Screen.AddWallet.route) {
+            AddWalletScreen(onNavigateUp = {
+                navController.navigateUp()
+            })
         }
     }
 }

@@ -70,7 +70,7 @@ fun LoginScreen(
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isShowPassword by remember { mutableStateOf(false) }
-    val context = LocalContext.current
+
 
     LaunchedEffect(uiState) {
         if (uiState is LoginUiState.Success) {

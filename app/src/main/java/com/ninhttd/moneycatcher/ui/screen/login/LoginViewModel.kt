@@ -1,11 +1,11 @@
 package com.ninhttd.moneycatcher.ui.screen.login
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ninhttd.moneycatcher.di.SessionManager
 import com.ninhttd.moneycatcher.domain.usecase.LoginUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.jan.supabase.auth.user.UserInfo
@@ -41,6 +41,7 @@ class LoginViewModel @Inject constructor(
             _uiState.value = LoginUiState.Loading
             val result = loginUseCase(email, password)
             userState = result.getOrNull()
+            SessionManager.currentUser = userState
             _uiState.value = if (result.isSuccess) {
                 LoginUiState.Success(result)
             } else {

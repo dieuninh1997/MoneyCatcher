@@ -15,14 +15,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.TrendingUp
-import androidx.compose.material.icons.filled.AttachMoney
-import androidx.compose.material.icons.filled.Category
-import androidx.compose.material.icons.filled.MoreHoriz
-import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,16 +22,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ninhttd.moneycatcher.domain.model.Category
+import com.ninhttd.moneycatcher.domain.model.Wallet
 import java.time.LocalDate
 
-
-data class Wallet(val name: String, val isDefault: Boolean, val money: Long)
-//data class Category(val name: String, val icon: ImageVector)
 
 fun formatMoney(amount: Long): String {
     val formatter = DecimalFormat("#,###")
@@ -66,11 +54,12 @@ fun formatVietnameseDate(date: LocalDate): String {
 
 @Composable
 fun TransactionContent(
-    wallet: Wallet,
+    wallet: Wallet?,
     date: String,
     categoriesList: List<Category>?,
     onSubmit: (note: String, amount: String, category: Category?) -> Unit,
     onNavigateEditCategory: () -> Unit,
+    onNavigateDetails: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var note by remember { mutableStateOf("") }
@@ -91,7 +80,7 @@ fun TransactionContent(
         ) {
 
             //vi
-            WalletPickerRow(wallet, {})
+            WalletPickerRow(wallet, onClick = {}, onNavigateDetails = onNavigateDetails)
             Spacer(modifier = Modifier.height(1.dp))
             DatePickerRow(selectedDate, onDateSelected = {
                 selectedDate = it

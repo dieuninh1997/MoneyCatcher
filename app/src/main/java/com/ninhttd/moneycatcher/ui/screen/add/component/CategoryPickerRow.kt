@@ -47,7 +47,7 @@ fun CategoryPickerRow(
     onNavigateEditCategory: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var isShowGrid by remember { mutableStateOf(true) }
+    var isShowGrid by remember { mutableStateOf(false) }
 
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         OutlinedButton(

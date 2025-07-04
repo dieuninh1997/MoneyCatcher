@@ -11,6 +11,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.composable
+import com.ninhttd.moneycatcher.ui.screen.editcategory.EditCategoryScreen
 import com.ninhttd.moneycatcher.ui.screen.login.LoginScreen
 
 @Composable
@@ -20,7 +21,7 @@ fun AppNavHost(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.NavigationBar.route,
+        startDestination = Screen.Login.route,
         enterTransition = {EnterTransition.None},
         exitTransition = { ExitTransition.None}
     ){
@@ -44,13 +45,6 @@ fun AppNavHost(
             )
         }
 
-//        composable(
-//            route = Screen.Details.route + "/{coinId}",
-//            enterTransition = { fadeIn(animationSpec = tween(500)) },
-//            exitTransition = { fadeOut(animationSpec = tween(500)) }
-//        ) {
-//            DetailsScreen(onNavigateUp = { navController.navigateUp() })
-//        }
 //        composable(
 //            route = Screen.Settings.route,
 //            enterTransition = { fadeIn(animationSpec = tween(500)) },

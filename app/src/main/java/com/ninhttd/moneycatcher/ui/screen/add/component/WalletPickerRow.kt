@@ -4,7 +4,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
@@ -19,10 +21,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.ninhttd.moneycatcher.domain.model.Wallet
+import com.ninhttd.moneycatcher.navigation.Screen
+import com.ninhttd.moneycatcher.ui.screen.wallet.component.AddWalletButton
 
 
 @Composable
-fun WalletPickerRow(wallet: Wallet, onClick: () -> Unit, modifier: Modifier = Modifier) {
+fun WalletPickerRow(
+    wallet: Wallet?,
+    onClick: () -> Unit,
+    onNavigateDetails: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -31,28 +41,36 @@ fun WalletPickerRow(wallet: Wallet, onClick: () -> Unit, modifier: Modifier = Mo
         color = Color(0xFF1E1E1E)
     ) {
 
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    wallet.name,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Gray,
-                    fontSize = 12.sp
+        Spacer(modifier= Modifier.fillMaxWidth().height(12.dp))
+        if (wallet != null) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        wallet.name,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Gray,
+                        fontSize = 12.sp
+                    )
+                    Text("${formatMoney(wallet.balance)} VND", color = Color.White)
+                }
+
+                Icon(
+                    imageVector = Icons.Default.ChevronRight,
+                    contentDescription = null,
+                    tint = Color.White
                 )
-                Text("${formatMoney(wallet.money)} VND", color = Color.White)
+
             }
-
-            Icon(
-                imageVector = Icons.Default.ChevronRight,
-                contentDescription = null,
-                tint = Color.White
-            )
-
+        } else {
+            AddWalletButton(onSubmit = {
+                onNavigateDetails(Screen.AddWallet.route)
+            })
         }
-
     }
 }
