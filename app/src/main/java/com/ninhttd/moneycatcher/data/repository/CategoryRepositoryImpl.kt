@@ -1,6 +1,6 @@
-package com.ninhttd.moneycatcher.data
+package com.ninhttd.moneycatcher.data.repository
 
-import com.ninhttd.moneycatcher.domain.model.CategoryDto
+import com.ninhttd.moneycatcher.data.model.CategoryDto
 import com.ninhttd.moneycatcher.domain.repository.CategoryRepository
 import io.github.jan.supabase.postgrest.Postgrest
 import kotlinx.coroutines.Dispatchers

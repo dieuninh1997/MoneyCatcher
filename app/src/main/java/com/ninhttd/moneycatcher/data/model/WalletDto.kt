@@ -1,4 +1,4 @@
-package com.ninhttd.moneycatcher.domain.model
+package com.ninhttd.moneycatcher.data.model
 
 import kotlinx.serialization.Serializable
 
@@ -8,5 +8,6 @@ data class WalletDto(
     val user_id: String,
     val name: String,
     val balance: Long,
+    val init_balance: Long,
     val is_default: Boolean = false
 )

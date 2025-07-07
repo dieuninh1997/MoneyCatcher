@@ -12,6 +12,7 @@ sealed class Screen(val route: String) {
     data object EditCategory: Screen("edit_category_screen")
     data object Wallet: Screen("wallet_screen")
     data object AddWallet: Screen("add_wallet_screen")
+    data object WalletDetail: Screen("wallet_detail_screen")
     data object NavigationBar: Screen("navigation_bar_screen")
 }
 

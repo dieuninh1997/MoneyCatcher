@@ -29,19 +29,21 @@ import com.ninhttd.moneycatcher.ui.screen.wallet.component.AddWalletButton
 @Composable
 fun WalletPickerRow(
     wallet: Wallet?,
-    onClick: () -> Unit,
+    onClick: (String) -> Unit,
     onNavigateDetails: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() },
+            .clickable { onClick(wallet?.id.toString()) },
         shape = RoundedCornerShape(8.dp),
         color = Color(0xFF1E1E1E)
     ) {
 
-        Spacer(modifier= Modifier.fillMaxWidth().height(12.dp))
+        Spacer(modifier = Modifier
+            .fillMaxWidth()
+            .height(12.dp))
         if (wallet != null) {
             Row(
                 modifier = Modifier

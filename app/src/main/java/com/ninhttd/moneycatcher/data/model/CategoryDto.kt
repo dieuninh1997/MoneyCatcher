@@ -1,4 +1,4 @@
-package com.ninhttd.moneycatcher.domain.model
+package com.ninhttd.moneycatcher.data.model
 
 import kotlinx.serialization.Serializable
 

@@ -1,4 +1,4 @@
-package com.ninhttd.moneycatcher.ui.screen.addwallet
+package com.ninhttd.moneycatcher.ui.screen.wallet.add
 
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -38,14 +38,15 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ninhttd.moneycatcher.di.SessionManager
 import com.ninhttd.moneycatcher.domain.model.Wallet
-import com.ninhttd.moneycatcher.ui.screen.addwallet.component.SettingSwitchRow
+import com.ninhttd.moneycatcher.ui.screen.wallet.component.SettingSwitchRow
 import com.ninhttd.moneycatcher.ui.screen.editcategory.TopBar
+import com.ninhttd.moneycatcher.ui.screen.wallet.WalletViewModel
 
 @Composable
 fun AddWalletScreen(
     onNavigateUp: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: AddWalletViewModel = hiltViewModel()
+    viewModel: WalletViewModel = hiltViewModel()
 ) {
     var walletName by remember { mutableStateOf("") }
     var initialBalance by remember { mutableStateOf("") }
@@ -61,7 +62,9 @@ fun AddWalletScreen(
             .padding(16.dp)
     ) {
         Column {
-            TopBar(title = "Thêm ví", onBackPress = {})
+            TopBar(title = "Thêm ví", onBackPress = {
+                onNavigateUp()
+            })
 
             Spacer(Modifier.height(24.dp))
 
@@ -151,6 +154,7 @@ fun AddWalletScreen(
                         name = walletName,
                         balance = initialBalance.toLong(),
                         isDefault = isDefault,
+                        initBalance = initialBalance.toLong()
                     )
                     viewModel.createWallet(wallet) { success ->
                         if(success) {

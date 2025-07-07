@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -26,7 +27,7 @@ fun WalletScreen(
     modifier: Modifier = Modifier,
     viewModel: WalletViewModel = hiltViewModel()
 ) {
-    val walletList = viewModel.walletList.collectAsState().value
+    val walletList by viewModel.walletList.collectAsState()
 
     Column(
         modifier = Modifier
@@ -54,7 +55,9 @@ fun WalletScreen(
                 val wallet = walletList[index]
                 WalletPickerRow(
                     wallet = wallet,
-                    {},
+                    { walletId ->
+                        onNavigateDetails("${Screen.WalletDetail.route}/$walletId")
+                    },
                     onNavigateDetails = {
                         onNavigateDetails(Screen.AddWallet.route)
                     }

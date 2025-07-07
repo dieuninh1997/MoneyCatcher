@@ -1,8 +1,8 @@
 package com.ninhttd.moneycatcher.di
 
-import com.ninhttd.moneycatcher.data.AuthRepositoryImpl
-import com.ninhttd.moneycatcher.data.CategoryRepositoryImpl
-import com.ninhttd.moneycatcher.data.WalletRepositoryImpl
+import com.ninhttd.moneycatcher.data.repository.AuthRepositoryImpl
+import com.ninhttd.moneycatcher.data.repository.CategoryRepositoryImpl
+import com.ninhttd.moneycatcher.data.repository.WalletRepositoryImpl
 import com.ninhttd.moneycatcher.domain.repository.AuthRepository
 import com.ninhttd.moneycatcher.domain.repository.CategoryRepository
 import com.ninhttd.moneycatcher.domain.repository.WalletRepository

@@ -3,7 +3,7 @@ package com.ninhttd.moneycatcher.ui.screen.editcategory
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ninhttd.moneycatcher.domain.model.Category
-import com.ninhttd.moneycatcher.domain.model.CategoryDto
+import com.ninhttd.moneycatcher.data.model.CategoryDto
 import com.ninhttd.moneycatcher.domain.repository.CategoryRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow

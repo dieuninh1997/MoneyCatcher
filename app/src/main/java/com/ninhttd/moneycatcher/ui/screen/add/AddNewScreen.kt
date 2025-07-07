@@ -1,5 +1,6 @@
 package com.ninhttd.moneycatcher.ui.screen.add.component
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,14 +23,18 @@ import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ninhttd.moneycatcher.domain.model.Category
+import com.ninhttd.moneycatcher.domain.model.Transaction
+import com.ninhttd.moneycatcher.domain.model.TransactionType
 import com.ninhttd.moneycatcher.domain.model.Wallet
 import com.ninhttd.moneycatcher.navigation.Screen
 import com.ninhttd.moneycatcher.ui.screen.add.AddNewiewModel
@@ -43,9 +48,13 @@ fun AddNewScreen(
     modifier: Modifier = Modifier,
     viewModel: AddNewiewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
     val categoriesList = viewModel.categoriesList.collectAsState(initial = listOf()).value
-    val walletList = viewModel.walletList.collectAsState().value
-    val currentWallet = walletList.firstOrNull()
+
+    val walletList by viewModel.walletList.collectAsState()
+    val currentWallet by viewModel.currentWallet.collectAsState(initial = null)
+    val currentWalletId by viewModel.currentWalletId.collectAsState(initial = null)
+    val currentUser by viewModel.currentUser.collectAsState()
 
     val pagerState = rememberPagerState(
         initialPage = 1,
@@ -56,6 +65,12 @@ fun AddNewScreen(
 
     LaunchedEffect(Unit) {
         viewModel.getWalletList()
+    }
+
+    LaunchedEffect(walletList) {
+        if (walletList.isNotEmpty()) {
+            viewModel.setCurrentWalletId(walletList.first().id)
+        }
     }
 
     Box(
@@ -73,15 +88,40 @@ fun AddNewScreen(
                 }
             },
             categoriesList = categoriesList,
+            currentWalletId = currentWalletId,
             currentWallet = currentWallet,
+            wallets = walletList,
             pagerState = pagerState,
             onNavigateEditCategory = onNavigateEditCategory,
-            onNavigateDetails = onNavigateDetails
+            onNavigateDetails = onNavigateDetails,
+            onChangeCurrentWalletId = { id ->
+                viewModel.setCurrentWalletId(id)
+            },
+            onSubmit = { money, note, transactionType, date, category ->
+                viewModel.createTransaction(
+                    Transaction(
+                        userId = currentUser?.id.toString(),
+                        walletId = currentWalletId.toString(),
+                        categoryId = category?.id.toString(),
+                        transactionType = transactionType,
+                        amount = money,
+                        note = note,
+                        transactionDate = date,
+                    )
+                ) { success ->
+                    if (success) {
+                        Toast.makeText(context, "Add success!", Toast.LENGTH_LONG).show()
+                    } else {
+                        Toast.makeText(context, "Error!!", Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
         )
 
         FABGroup(onNavigateNote = onNavigateNote, modifier = Modifier.align(Alignment.BottomEnd))
     }
 }
+
 
 @Composable
 fun FABGroup(modifier: Modifier = Modifier, onNavigateNote: (String) -> Unit) {
@@ -118,10 +158,14 @@ fun MainContent(
     onTabSelected: (Int) -> Unit,
     pagerState: PagerState,
     categoriesList: List<Category>?,
+    currentWalletId: String?,
     currentWallet: Wallet?,
     onNavigateEditCategory: () -> Unit,
+    wallets: List<Wallet>,
+    onNavigateDetails: (String) -> Unit,
+    onChangeCurrentWalletId: (String) -> Unit,
     modifier: Modifier = Modifier,
-    onNavigateDetails: (String) -> Unit
+    onSubmit: (String, String, TransactionType, java.time.LocalDate, Category?) -> Unit
 ) {
     Column {
         //tabs
@@ -136,17 +180,25 @@ fun MainContent(
         ) { page ->
             when (page) {
                 0 -> ExpenseContent(
-                    categoriesList,
-                    currentWallet,
+                    onChangeCurrentWalletId = onChangeCurrentWalletId,
+                    categoriesList = categoriesList,
+                    currentWalletId = currentWalletId,
+                    currentWallet = currentWallet,
+                    wallets = wallets,
                     onNavigateEditCategory = onNavigateEditCategory,
-                    onNavigateDetails = onNavigateDetails
+                    onNavigateDetails = onNavigateDetails,
+                    onSubmit = onSubmit
                 )
 
                 1 -> IncomeContent(
-                    categoriesList,
-                    currentWallet,
+                    onChangeCurrentWalletId = onChangeCurrentWalletId,
+                    categoriesList = categoriesList,
+                    currentWalletId = currentWalletId,
+                    currentWallet = currentWallet,
+                    wallets = wallets,
                     onNavigateEditCategory = onNavigateEditCategory,
-                    onNavigateDetails = onNavigateDetails
+                    onNavigateDetails = onNavigateDetails,
+                    onSubmit = onSubmit
                 )
             }
         }
@@ -157,40 +209,52 @@ fun MainContent(
 @Composable
 fun IncomeContent(
     categoriesList: List<Category>?,
+    onChangeCurrentWalletId: (String) -> Unit,
+    currentWalletId: String?,
     currentWallet: Wallet?,
+    wallets: List<Wallet>,
     onNavigateEditCategory: () -> Unit,
+    onNavigateDetails: (String) -> Unit,
     modifier: Modifier = Modifier,
-    onNavigateDetails: (String) -> Unit
+    onSubmit: (String, String, TransactionType, java.time.LocalDate, Category?) -> Unit
 ) {
     TransactionContent(
-        currentWallet,
-        "02-07-2025",
-        categoriesList,
-        onSubmit = { note, amount, category ->
-            //TODO
-        },
+        onChangeCurrentWalletId = onChangeCurrentWalletId,
+        currentWalletId = currentWalletId,
+        currentWallet = currentWallet,
+        wallets = wallets,
+        date = "02-07-2025",
+        categoriesList = categoriesList,
+        onSubmit = onSubmit,
         onNavigateEditCategory = onNavigateEditCategory,
-        onNavigateDetails = onNavigateDetails
+        onNavigateDetails = onNavigateDetails,
+        transactionType = TransactionType.INCOME
     )
 }
 
 @Composable
 fun ExpenseContent(
     categoriesList: List<Category>?,
+    onChangeCurrentWalletId: (String) -> Unit,
+    currentWalletId: String?,
     currentWallet: Wallet?,
+    wallets: List<Wallet>,
     onNavigateEditCategory: () -> Unit,
+    onNavigateDetails: (String) -> Unit,
     modifier: Modifier = Modifier,
-    onNavigateDetails: (String) -> Unit
+    onSubmit: (String, String, TransactionType, java.time.LocalDate, Category?) -> Unit
 ) {
     TransactionContent(
-        currentWallet,
-        "02-07-2025",
-        categoriesList,
-        onSubmit = { note, amount, category ->
-            //TODO
-        },
+        onChangeCurrentWalletId = onChangeCurrentWalletId,
+        currentWalletId = currentWalletId,
+        wallets = wallets,
+        currentWallet = currentWallet,
+        date = "02-07-2025",
+        categoriesList = categoriesList,
+        onSubmit = onSubmit,
         onNavigateEditCategory = onNavigateEditCategory,
-        onNavigateDetails = onNavigateDetails
+        onNavigateDetails = onNavigateDetails,
+        transactionType = TransactionType.EXPENSE
     )
 }
 

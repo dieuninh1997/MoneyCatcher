@@ -9,5 +9,6 @@ data class Wallet(
     val userId: String = "",
     val name: String,
     val balance: Long,
+    val initBalance: Long,
     val isDefault: Boolean = false
 )

@@ -29,18 +29,21 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.ninhttd.moneycatcher.ui.screen.add.OthersScreen
 import com.ninhttd.moneycatcher.ui.screen.add.ReportScreen
 import com.ninhttd.moneycatcher.ui.screen.add.component.AddNewScreen
-import com.ninhttd.moneycatcher.ui.screen.addwallet.AddWalletScreen
 import com.ninhttd.moneycatcher.ui.screen.calendar.CalendarScreen
 import com.ninhttd.moneycatcher.ui.screen.editcategory.EditCategoryScreen
 import com.ninhttd.moneycatcher.ui.screen.home.HomeScreen
 import com.ninhttd.moneycatcher.ui.screen.wallet.WalletScreen
+import com.ninhttd.moneycatcher.ui.screen.wallet.add.AddWalletScreen
+import com.ninhttd.moneycatcher.ui.screen.wallet.detail.WalletDetailScreen
 import kotlinx.collections.immutable.persistentListOf
 
 @Composable
@@ -237,6 +240,24 @@ private fun NavigationBarNavHost(
             AddWalletScreen(onNavigateUp = {
                 navController.navigateUp()
             })
+        }
+        composable(
+            route = "${Screen.WalletDetail.route}/{walletId}",
+            arguments = listOf(navArgument("walletId") {
+                type =
+                    NavType.StringType
+            })
+        ) { backStackEntry ->
+            val walletId = backStackEntry.arguments?.getString("walletId")
+            WalletDetailScreen(
+                onNavigateDetails = { route ->
+
+                },
+                onNavigateUp = {
+                    navController.navigateUp()
+                },
+                walletId = walletId ?: ""
+            )
         }
     }
 }

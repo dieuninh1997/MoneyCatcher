@@ -1,4 +1,4 @@
-package com.ninhttd.moneycatcher.data
+package com.ninhttd.moneycatcher.data.repository
 
 import android.content.Context
 import androidx.browser.customtabs.CustomTabsIntent
@@ -32,7 +32,7 @@ class AuthRepositoryImpl @Inject constructor(
             auth.currentUserOrNull()
 
         } catch (e: Exception) {
-            Timber.tag("AUTH").e("Login failed: ${e.message}")
+            Timber.Forest.tag("AUTH").e("Login failed: ${e.message}")
 
             if ("User not found" in e.message.orEmpty() || "Invalid login credentials" in e.message.orEmpty()) {
                 try {
@@ -40,21 +40,21 @@ class AuthRepositoryImpl @Inject constructor(
                         this.email = email
                         this.password = password
                     }
-                    Timber.tag("AUTH").e("Đăng ký thành công")
+                    Timber.Forest.tag("AUTH").e("Đăng ký thành công")
 
                     auth.signInWith(Email) {
                         this.email = email
                         this.password = password
                     }
 
-                    Timber.tag("AUTH").e("Đăng nhập lại sau đăng ký thành công")
+                    Timber.Forest.tag("AUTH").e("Đăng nhập lại sau đăng ký thành công")
                     auth.currentUserOrNull()
                 } catch (signupError: Exception) {
-                    Timber.tag("AUTH").e("Đăng ký thất bại: ${signupError.message}")
+                    Timber.Forest.tag("AUTH").e("Đăng ký thất bại: ${signupError.message}")
                     null
                 }
             } else {
-                Timber.tag("AUTH").e("Sai mật khẩu hoặc tài khoản")
+                Timber.Forest.tag("AUTH").e("Sai mật khẩu hoặc tài khoản")
                 null
             }
         }

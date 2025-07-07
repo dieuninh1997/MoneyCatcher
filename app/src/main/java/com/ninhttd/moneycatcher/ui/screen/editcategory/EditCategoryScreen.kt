@@ -50,6 +50,8 @@ fun EditCategoryScreen(
         pageCount = { 2 }
     )
 
+
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -74,6 +76,7 @@ fun EditCategoryScreen(
             Wallet(
                 name = "Vi 1",
                 balance = 27_000_000L,
+                initBalance = 27_000_000L
             ),
             {},
             onNavigateDetails

@@ -1,4 +1,4 @@
-package com.ninhttd.moneycatcher.ui.screen.addwallet.component
+package com.ninhttd.moneycatcher.ui.screen.wallet.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row

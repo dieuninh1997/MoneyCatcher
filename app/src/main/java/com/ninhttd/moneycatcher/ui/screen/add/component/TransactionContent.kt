@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.ninhttd.moneycatcher.domain.model.Category
+import com.ninhttd.moneycatcher.domain.model.TransactionType
 import com.ninhttd.moneycatcher.domain.model.Wallet
 import java.time.LocalDate
 
@@ -54,18 +55,23 @@ fun formatVietnameseDate(date: LocalDate): String {
 
 @Composable
 fun TransactionContent(
-    wallet: Wallet?,
+    currentWalletId: String?,
+    currentWallet: Wallet?,
+    onChangeCurrentWalletId: (String) -> Unit,
+    wallets: List<Wallet>,
     date: String,
     categoriesList: List<Category>?,
-    onSubmit: (note: String, amount: String, category: Category?) -> Unit,
+    onSubmit: (note: String, amount: String, type: TransactionType, date: LocalDate, category: Category?) -> Unit,
     onNavigateEditCategory: () -> Unit,
     onNavigateDetails: (String) -> Unit,
+    transactionType: TransactionType,
     modifier: Modifier = Modifier
 ) {
     var note by remember { mutableStateOf("") }
     var money by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf<Category?>(null) }
     var selectedDate by remember { mutableStateOf(LocalDate.now()) }
+    var showBottomSheet by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -80,12 +86,20 @@ fun TransactionContent(
         ) {
 
             //vi
-            WalletPickerRow(wallet, onClick = {}, onNavigateDetails = onNavigateDetails)
+            WalletPickerRow(
+                currentWallet,
+                onClick = {
+                    showBottomSheet = true
+                },
+                onNavigateDetails = onNavigateDetails
+            )
             Spacer(modifier = Modifier.height(1.dp))
+
             DatePickerRow(selectedDate, onDateSelected = {
                 selectedDate = it
             })
             Spacer(modifier = Modifier.height(5.dp))
+
             NoteInput(
                 note = note,
                 onNoteChange = {
@@ -93,10 +107,12 @@ fun TransactionContent(
                 }
             )
             Spacer(modifier = Modifier.height(5.dp))
+
             MoneyInput(money, onAmountChange = {
                 money = it
             })
             Spacer(modifier = Modifier.height(5.dp))
+
             CategoryPickerRow(
                 categoriesList,
                 selectedCategory = selectedCategory,
@@ -108,7 +124,11 @@ fun TransactionContent(
         }
 
         Button(
-            onClick = { /* handle submit */ },
+            onClick = {
+                onSubmit(
+                    money, note, transactionType, selectedDate, selectedCategory
+                )
+            },
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
@@ -116,6 +136,18 @@ fun TransactionContent(
             shape = RoundedCornerShape(12.dp)
         ) {
             Text("Gửi", fontWeight = FontWeight.Bold)
+        }
+
+        if (showBottomSheet) {
+            WalletPickerBottomSheet(
+                currentWalletId = currentWalletId.toString(),
+                wallets = wallets,
+                onSelect = {
+                    onChangeCurrentWalletId(it.id)
+                    showBottomSheet = false
+                },
+                onDismiss = { showBottomSheet = false }
+            )
         }
     }
 }
