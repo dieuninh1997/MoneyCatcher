@@ -14,6 +14,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -24,9 +25,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.ninhttd.moneycatcher.common.TransactionType
 import com.ninhttd.moneycatcher.domain.model.Category
-import com.ninhttd.moneycatcher.domain.model.TransactionType
 import com.ninhttd.moneycatcher.domain.model.Wallet
+import com.ninhttd.moneycatcher.ui.theme.ColorColdPurplePink
+import com.ninhttd.moneycatcher.ui.theme.ColorOnSurfaceDark
 import java.time.LocalDate
 
 
@@ -133,9 +136,10 @@ fun TransactionContent(
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
                 .height(50.dp),
-            shape = RoundedCornerShape(12.dp)
+            shape = RoundedCornerShape(12.dp),
+            colors = ButtonDefaults.buttonColors(ColorColdPurplePink)
         ) {
-            Text("Gửi", fontWeight = FontWeight.Bold)
+            Text("Gửi", fontWeight = FontWeight.Bold, color = ColorOnSurfaceDark)
         }
 
         if (showBottomSheet) {

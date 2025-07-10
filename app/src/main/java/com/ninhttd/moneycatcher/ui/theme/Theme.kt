@@ -12,15 +12,15 @@ import com.google.accompanist.systemuicontroller.SystemUiController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ninhttd.moneycatcher.navigation.Screen
 
-private val darkColorScheme = darkColorScheme(
-    primary = dark_primary,
-    primaryContainer = dark_primaryContainer,
-    onPrimaryContainer = dark_onPrimaryContainer,
-    background = dark_background,
-    onBackground = dark_onBackground,
-    surface = dark_surface,
-    onSurface = dark_onSurface,
-    onSurfaceVariant = dark_onSurfaceVariant
+private val DarkPinkColorScheme = darkColorScheme(
+    primary = ColorPinkPrimary,
+    primaryContainer = ColorPinkPrimaryContainer,
+    onPrimaryContainer = ColorOnPrimaryContainer,
+    background = ColorBackgroundDark,
+    onBackground = ColorOnBackgroundDark,
+    surface = ColorSurfaceDark,
+    onSurface = ColorOnSurfaceDark,
+    surfaceVariant = ColorOnSurfaceVariantDark
 )
 
 @Composable
@@ -31,7 +31,7 @@ fun AppTheme(
 ) {
     LaunchedEffect(systemUiController) {
         systemUiController.setStatusBarColor(
-            color = darkColorScheme.background,
+            color = DarkPinkColorScheme.background,
             darkIcons = false
         )
     }
@@ -42,9 +42,9 @@ fun AppTheme(
         val inNavigationBarScreen = currentRoute == Screen.NavigationBar.route
 
         val gestureBarColor = if (inNavigationBarScreen) {
-            darkColorScheme.primaryContainer
+            DarkPinkColorScheme.primaryContainer
         } else {
-            darkColorScheme.background
+            DarkPinkColorScheme.background
         }
 
         systemUiController.setNavigationBarColor(
@@ -54,7 +54,7 @@ fun AppTheme(
     }
 
     MaterialTheme(
-        colorScheme = darkColorScheme,
+        colorScheme = DarkPinkColorScheme,
         shapes = AppShapes,
         typography = AppTypography,
         content = content

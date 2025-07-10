@@ -7,3 +7,18 @@ object Constants {
     const val EXPENSE_TAB = 0
     const val INCOME_TAB = 1
 }
+
+
+enum class TransactionType(val id: Int, val txName: String, val displayName: String) {
+    INCOME(1, "income", "Thu nhập"),
+    EXPENSE(2, "expense", "Chi tiêu");
+
+    companion object {
+        fun fromId(id: Int): TransactionType? =
+            TransactionType.entries.find { it.id == id }
+    }
+}
+
+enum class TimeFilter {
+    WEEKLY, MONTHLY, YEARLY
+}

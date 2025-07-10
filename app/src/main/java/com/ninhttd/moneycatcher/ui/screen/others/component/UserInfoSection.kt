@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.ninhttd.moneycatcher.ui.theme.ColorColdPurplePink
 
 @Composable
 fun UserInfoSection(modifier: Modifier = Modifier) {
@@ -34,7 +35,7 @@ fun UserInfoSection(modifier: Modifier = Modifier) {
         )
         Spacer(Modifier.width(12.dp))
         Column {
-            Text("Ninh Trần Thị Diệu", color = Color.White, fontWeight = FontWeight.Bold)
+            Text("Ninh Trần Thị Diệu", color = ColorColdPurplePink, fontWeight = FontWeight.Bold)
             Text("ttdn1997@gmail.com", color = Color.Gray)
         }
     }

@@ -1,8 +1,8 @@
 package com.ninhttd.moneycatcher.data.model
 
+import com.ninhttd.moneycatcher.common.TransactionType
 import com.ninhttd.moneycatcher.di.LocalDateSerializer
 import com.ninhttd.moneycatcher.domain.model.Transaction
-import com.ninhttd.moneycatcher.domain.model.TransactionType
 import kotlinx.serialization.Serializable
 import java.time.LocalDate
 
@@ -13,7 +13,7 @@ data class TransactionDto(
     val wallet_id: String,
     val category_id: String,
     val transaction_type_id: Int,
-    val amount: String,
+    val amount: Long,
     val note: String,
 
     @Serializable(with = LocalDateSerializer::class)

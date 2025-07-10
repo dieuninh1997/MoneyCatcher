@@ -44,6 +44,10 @@ import com.ninhttd.moneycatcher.ui.screen.home.HomeScreen
 import com.ninhttd.moneycatcher.ui.screen.wallet.WalletScreen
 import com.ninhttd.moneycatcher.ui.screen.wallet.add.AddWalletScreen
 import com.ninhttd.moneycatcher.ui.screen.wallet.detail.WalletDetailScreen
+import com.ninhttd.moneycatcher.ui.theme.ColorColdPurplePink
+import com.ninhttd.moneycatcher.ui.theme.ColorMutedPinkGray
+import com.ninhttd.moneycatcher.ui.theme.ColorSurfaceDark
+import com.ninhttd.moneycatcher.ui.theme.ColorZeroWhite
 import kotlinx.collections.immutable.persistentListOf
 
 @Composable
@@ -73,15 +77,15 @@ fun NavigationBarScaffold(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { navController.navigate(NavigationBarScreen.Add.route) },
-                contentColor = Color.DarkGray,
-                backgroundColor = Color.DarkGray,
+                contentColor = ColorColdPurplePink,
+                backgroundColor = ColorMutedPinkGray,
                 shape = CircleShape,
                 elevation = FloatingActionButtonDefaults.elevation(8.dp)
             ) {
                 Icon(
                     Icons.Default.Add,
                     contentDescription = "Add",
-                    tint = if (currentDestination?.route == NavigationBarScreen.Add.route) Color.White else Color.Gray
+                    tint = if (currentDestination?.route == NavigationBarScreen.Add.route) ColorColdPurplePink else Color.LightGray
                 )
             }
         },
@@ -90,7 +94,7 @@ fun NavigationBarScaffold(
     ) { innerPadding ->
         NavigationBarNavHost(
             navController,
-            startScreen = NavigationBarScreen.Add,
+            startScreen = NavigationBarScreen.Home,
             onNavigateDetails = { route ->
                 navController.navigate(route)
             },
@@ -144,6 +148,8 @@ fun BottomBarWithFab(navController: NavHostController, modifier: Modifier = Modi
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
 
     BottomAppBar(
+        containerColor = ColorSurfaceDark,
+        contentColor = ColorMutedPinkGray,
         tonalElevation = 6.dp,
     ) {
         items.forEachIndexed { index, item ->
@@ -158,7 +164,7 @@ fun BottomBarWithFab(navController: NavHostController, modifier: Modifier = Modi
                             Icon(
                                 it,
                                 contentDescription = null,
-                                tint = if (currentRoute == item.route) Color.White else Color.Gray
+                                tint = if (currentRoute == item.route) ColorZeroWhite else ColorMutedPinkGray
                             )
                         }
                     },
@@ -166,7 +172,7 @@ fun BottomBarWithFab(navController: NavHostController, modifier: Modifier = Modi
                         Text(
                             text = item.label?.let { stringResource(item.label) } ?: "",
                             fontSize = 11.sp,
-                            color = if (currentRoute == item.route) Color.White else Color.Gray
+                            color = if (currentRoute == item.route) ColorZeroWhite else ColorMutedPinkGray
                         )
                     },
                     alwaysShowLabel = true
@@ -237,6 +243,11 @@ private fun NavigationBarNavHost(
             )
         }
         composable(route = Screen.AddWallet.route) {
+            AddWalletScreen(onNavigateUp = {
+                navController.navigateUp()
+            })
+        }
+        composable(route = Screen.Search.route) {
             AddWalletScreen(onNavigateUp = {
                 navController.navigateUp()
             })

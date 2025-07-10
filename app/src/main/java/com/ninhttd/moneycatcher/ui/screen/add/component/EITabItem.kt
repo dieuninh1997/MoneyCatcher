@@ -22,6 +22,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.ninhttd.moneycatcher.ui.theme.ColorColdPurplePink
+import com.ninhttd.moneycatcher.ui.theme.ColorOnSurfaceVariantDark
+import com.ninhttd.moneycatcher.ui.theme.ColorPinkPrimaryContainer
 
 @Composable
 fun EITabItem(
@@ -31,7 +34,7 @@ fun EITabItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val backgroundColor = if (isSelected) Color(0xFFFF3D00) else Color.Transparent
+    val backgroundColor = if (isSelected) ColorPinkPrimaryContainer else Color.Transparent
     val textColor = if (isSelected) Color.White else Color.LightGray
 
     Box(

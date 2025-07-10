@@ -2,6 +2,7 @@ package com.ninhttd.moneycatcher.ui.screen.add
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ninhttd.moneycatcher.common.TransactionType
 import com.ninhttd.moneycatcher.data.model.CategoryDto
 import com.ninhttd.moneycatcher.data.model.TransactionDto
 import com.ninhttd.moneycatcher.data.model.WalletDto
@@ -11,6 +12,7 @@ import com.ninhttd.moneycatcher.domain.model.Category
 import com.ninhttd.moneycatcher.domain.model.Transaction
 import com.ninhttd.moneycatcher.domain.model.Wallet
 import com.ninhttd.moneycatcher.domain.repository.CategoryRepository
+import com.ninhttd.moneycatcher.domain.repository.TransactionRepository
 import com.ninhttd.moneycatcher.domain.repository.WalletRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.jan.supabase.auth.user.UserInfo
@@ -28,6 +30,7 @@ import javax.inject.Inject
 class AddNewiewModel @Inject constructor(
     private val categoryRepository: CategoryRepository,
     private val walletRepository: WalletRepository,
+    private val transactionRepository: TransactionRepository,
     private val appPrefs: AppPreferencesManager
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(AddNewUiState())
@@ -35,6 +38,9 @@ class AddNewiewModel @Inject constructor(
 
     private val _categoriesList = MutableStateFlow<List<Category>?>(listOf())
     val categoriesList: Flow<List<Category>?> = _categoriesList
+
+    private val _transactionsList = MutableStateFlow<List<Transaction>?>(listOf())
+    val transactionsList: Flow<List<Transaction>?> = _transactionsList
 
     val walletList = appPrefs.walletListFlow.stateIn(
         viewModelScope,
@@ -67,6 +73,26 @@ class AddNewiewModel @Inject constructor(
         _currentUser.value = SessionManager.currentUser
     }
 
+    private fun getTransactionsList() {
+        viewModelScope.launch {
+            val transactions = transactionRepository.getTransactions()
+            _transactionsList.emit(transactions?.map { it -> it.asDomainModel() })
+        }
+    }
+
+    private fun TransactionDto.asDomainModel(): Transaction {
+        return Transaction(
+            id = this.id,
+            userId = this.user_id,
+            walletId = this.wallet_id,
+            categoryId = this.category_id,
+            transactionType = TransactionType.fromId(this.transaction_type_id) ?: TransactionType.EXPENSE,
+            amount = this.amount,
+            note = this.note,
+            transactionDate = this.transaction_date,
+        )
+    }
+
     private fun getCategoriesList() {
         viewModelScope.launch {
             val categories = categoryRepository.getCategories()
@@ -96,7 +122,7 @@ class AddNewiewModel @Inject constructor(
                 transaction_date = transaction.transactionDate
             )
             val success = walletRepository.createTransaction(transactionDto)
-            //TODO: get transactions from remote
+            getTransactionsList()
             onResult(success)
         }
     }

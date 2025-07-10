@@ -24,6 +24,8 @@ import androidx.compose.ui.unit.sp
 import com.ninhttd.moneycatcher.domain.model.Wallet
 import com.ninhttd.moneycatcher.navigation.Screen
 import com.ninhttd.moneycatcher.ui.screen.wallet.component.AddWalletButton
+import com.ninhttd.moneycatcher.ui.theme.ColorColdPurplePink
+import com.ninhttd.moneycatcher.ui.theme.ColorPinkPrimaryContainer
 
 
 @Composable
@@ -38,7 +40,7 @@ fun WalletPickerRow(
             .fillMaxWidth()
             .clickable { onClick(wallet?.id.toString()) },
         shape = RoundedCornerShape(8.dp),
-        color = Color(0xFF1E1E1E)
+        color = ColorColdPurplePink
     ) {
 
         Spacer(modifier = Modifier
@@ -56,7 +58,7 @@ fun WalletPickerRow(
                     Text(
                         wallet.name,
                         fontWeight = FontWeight.Bold,
-                        color = Color.Gray,
+                        color =ColorPinkPrimaryContainer,
                         fontSize = 12.sp
                     )
                     Text("${formatMoney(wallet.balance)} VND", color = Color.White)

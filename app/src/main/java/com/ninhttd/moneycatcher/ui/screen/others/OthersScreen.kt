@@ -24,6 +24,7 @@ import com.ninhttd.moneycatcher.ui.screen.others.OthersViewModel
 import com.ninhttd.moneycatcher.ui.screen.others.component.SettingItem
 import com.ninhttd.moneycatcher.ui.screen.others.component.SettingsGroup
 import com.ninhttd.moneycatcher.ui.screen.others.component.UserInfoSection
+import com.ninhttd.moneycatcher.ui.theme.ColorPinkPrimary
 
 
 @Composable
@@ -50,7 +51,7 @@ fun OthersScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF121212))
+            .background(ColorPinkPrimary)
             .padding(16.dp)
     ) {
 

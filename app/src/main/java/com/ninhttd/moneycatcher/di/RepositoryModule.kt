@@ -2,9 +2,11 @@ package com.ninhttd.moneycatcher.di
 
 import com.ninhttd.moneycatcher.data.repository.AuthRepositoryImpl
 import com.ninhttd.moneycatcher.data.repository.CategoryRepositoryImpl
+import com.ninhttd.moneycatcher.data.repository.TransactionRepositoryImpl
 import com.ninhttd.moneycatcher.data.repository.WalletRepositoryImpl
 import com.ninhttd.moneycatcher.domain.repository.AuthRepository
 import com.ninhttd.moneycatcher.domain.repository.CategoryRepository
+import com.ninhttd.moneycatcher.domain.repository.TransactionRepository
 import com.ninhttd.moneycatcher.domain.repository.WalletRepository
 import dagger.Module
 import dagger.Provides
@@ -32,5 +34,11 @@ object RepositoryModule {
     fun provideWalletRepository(postgrest: Postgrest): WalletRepository {
         return WalletRepositoryImpl(postgrest)
     }
+
+    @Provides
+    fun provideTransactionRepository(postgrest: Postgrest): TransactionRepository {
+        return TransactionRepositoryImpl(postgrest)
+    }
+
 
 }

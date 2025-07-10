@@ -1,8 +1,10 @@
 package com.ninhttd.moneycatcher.ui.screen.add.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -21,6 +23,7 @@ import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.Card
@@ -37,6 +40,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ninhttd.moneycatcher.domain.model.Category
+import com.ninhttd.moneycatcher.ui.theme.ColorColdPurplePink
+import com.ninhttd.moneycatcher.ui.theme.ColorOnSurfaceDark
+import com.ninhttd.moneycatcher.ui.theme.ColorPinkPrimaryContainer
+import com.ninhttd.moneycatcher.ui.theme.ColorZeroWhite
 import timber.log.Timber
 
 @Composable
@@ -56,13 +63,11 @@ fun CategoryPickerRow(
             },
             shape = RoundedCornerShape(8.dp),
             modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(
-                contentColor = Color.DarkGray,
-            )
+            colors = ButtonDefaults.buttonColors(ColorColdPurplePink)
         ) {
             Text(
                 "Danh mục: ${selectedCategory?.name ?: ""}" ?: "Chọn danh mục",
-                color = Color.White
+                color = ColorOnSurfaceDark
             )
             Spacer(modifier = Modifier.weight(1f))
             Icon(
@@ -93,7 +98,7 @@ fun CategoryPickerRow(
                             },
                         shape = RoundedCornerShape(12.dp),
                         colors = CardDefaults.cardColors(
-                            containerColor = Color.LightGray
+                            containerColor = ColorColdPurplePink
                         )
                     ) {
                         Column(
@@ -106,7 +111,7 @@ fun CategoryPickerRow(
                             Icon(
                                 imageVector = Icons.Default.Add,
                                 contentDescription = null,
-                                tint = Color.DarkGray,
+                                tint = ColorZeroWhite,
                                 modifier = Modifier.size(24.dp)
                             )
                         }
@@ -116,40 +121,63 @@ fun CategoryPickerRow(
                     items(categories.size) { index ->
                         val category = categories[index]
                         val isSelected = category.name == selectedCategory?.name
+                        val borderColor =
+                            if (isSelected) ColorColdPurplePink else ColorPinkPrimaryContainer
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .heightIn(max = 80.dp)
                                 .padding(6.dp)
+                                .border(2.dp, borderColor, RoundedCornerShape(12.dp))
                                 .clickable {
                                     onCategorySelected(category)
                                     isShowGrid = false
                                 },
                             shape = RoundedCornerShape(12.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = if (isSelected) Color.Blue else Color.LightGray
-                            )
+                            colors = CardDefaults.cardColors(containerColor = ColorPinkPrimaryContainer)
                         ) {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(8.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center
-                            ) {
-                                Text(
-                                    text = category.icon,
-                                    fontSize = 24.sp,
-                                    color = if (isSelected) Color.White else Color.DarkGray,
-                                    textAlign = TextAlign.Center
-                                )
-                                Spacer(modifier = Modifier.height(4.dp))
-                                Text(
-                                    text = category.name,
-                                    fontSize = 12.sp,
-                                    color = if (isSelected) Color.White else Color.DarkGray,
-                                    textAlign = TextAlign.Center
-                                )
+                            Box(modifier = Modifier.fillMaxSize()) {
+                                if (isSelected) {
+                                    Box(
+                                        modifier = Modifier
+                                            .align(Alignment.TopEnd)
+                                            .size(20.dp)
+                                            .background(
+                                                color = ColorColdPurplePink,
+                                                shape = RoundedCornerShape(4.dp)
+                                            ),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Filled.Check,
+                                            contentDescription = "Selected",
+                                            tint = Color.White,
+                                            modifier = Modifier.size(14.dp)
+                                        )
+                                    }
+                                }
+
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(8.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center
+                                ) {
+                                    Text(
+                                        text = category.icon,
+                                        fontSize = 24.sp,
+                                        color = if (isSelected) ColorColdPurplePink else ColorZeroWhite,
+                                        textAlign = TextAlign.Center
+                                    )
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Text(
+                                        text = category.name,
+                                        fontSize = 12.sp,
+                                        color = if (isSelected) ColorColdPurplePink else ColorZeroWhite,
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
                             }
                         }
                     }

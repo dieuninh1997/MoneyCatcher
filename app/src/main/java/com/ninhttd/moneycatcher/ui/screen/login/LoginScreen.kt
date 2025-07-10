@@ -21,7 +21,6 @@ import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
-import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
@@ -43,7 +42,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -55,6 +53,10 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ninhttd.moneycatcher.R
+import com.ninhttd.moneycatcher.ui.theme.ColorColdPurplePink
+import com.ninhttd.moneycatcher.ui.theme.ColorOnSurfaceDark
+import com.ninhttd.moneycatcher.ui.theme.ColorOnSurfaceVariantDark
+import com.ninhttd.moneycatcher.ui.theme.ColorPastelOrange
 
 
 @Composable
@@ -67,8 +69,8 @@ fun LoginScreen(
     val keyboardController = LocalSoftwareKeyboardController.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val user = viewModel.uiState
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("ttdn1997@gmail.com") }
+    var password by remember { mutableStateOf("Mk1072017@@") }
     var isShowPassword by remember { mutableStateOf(false) }
 
 
@@ -78,7 +80,7 @@ fun LoginScreen(
             viewModel.reset() // đừng quên reset lại uiState sau navigate
         }
     }
-    Box(modifier = Modifier.fillMaxSize()){
+    Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = modifier
                 .fillMaxWidth()
@@ -97,7 +99,7 @@ fun LoginScreen(
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     "Money Catcher",
-                    color = Color.White,
+                    color = ColorOnSurfaceDark,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -108,7 +110,7 @@ fun LoginScreen(
                 "Đăng nhập vào tài khoản của bạn",
                 fontWeight = FontWeight.Bold,
                 fontSize = 24.sp,
-                color = Color.White
+                color = ColorOnSurfaceDark
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -118,16 +120,22 @@ fun LoginScreen(
                 value = email,
                 onValueChange = { email = it },
                 label = { Text("Email") },
-                leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
+                leadingIcon = {
+                    Icon(
+                        Icons.Default.Email,
+                        contentDescription = null,
+                        tint = ColorOnSurfaceVariantDark
+                    )
+                },
                 placeholder = { Text("Nhập email") },
                 modifier = Modifier.fillMaxWidth(),
                 colors = androidx.compose.material.TextFieldDefaults.outlinedTextFieldColors(
-                    textColor = Color.White,
-                    unfocusedBorderColor = Color.Gray,
-                    focusedLabelColor = Color.White,
-                    focusedBorderColor = Color.White,
-                    placeholderColor = Color.Gray,
-                    leadingIconColor = Color.Gray,
+                    textColor = ColorColdPurplePink,
+                    unfocusedBorderColor = ColorOnSurfaceVariantDark,
+                    focusedLabelColor = ColorColdPurplePink,
+                    focusedBorderColor = ColorColdPurplePink,
+                    placeholderColor = ColorOnSurfaceVariantDark,
+                    leadingIconColor = ColorOnSurfaceVariantDark,
                 )
             )
 
@@ -139,7 +147,13 @@ fun LoginScreen(
                 onValueChange = { password = it },
                 label = { Text("Mật khẩu") },
                 placeholder = { Text("Nhập mật khẩu") },
-                leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
+                leadingIcon = {
+                    Icon(
+                        Icons.Default.Lock,
+                        contentDescription = null,
+                        tint = ColorOnSurfaceVariantDark
+                    )
+                },
                 trailingIcon = {
                     IconButton(
                         onClick = {
@@ -148,19 +162,20 @@ fun LoginScreen(
                     ) {
                         Icon(
                             imageVector = if (isShowPassword) Icons.Rounded.Visibility else Icons.Default.VisibilityOff,
-                            contentDescription = null
+                            contentDescription = null,
+                            tint = ColorOnSurfaceVariantDark
                         )
                     }
                 },
                 visualTransformation = if (isShowPassword) VisualTransformation.None else PasswordVisualTransformation(),
                 modifier = Modifier.fillMaxWidth(),
                 colors = androidx.compose.material.TextFieldDefaults.outlinedTextFieldColors(
-                    textColor = Color.White,
-                    unfocusedBorderColor = Color.Gray,
-                    focusedLabelColor = Color.White,
-                    focusedBorderColor = Color.White,
-                    placeholderColor = Color.Gray,
-                    leadingIconColor = Color.Gray,
+                    textColor = ColorColdPurplePink,
+                    unfocusedBorderColor = ColorOnSurfaceVariantDark,
+                    focusedLabelColor = ColorColdPurplePink,
+                    focusedBorderColor = ColorColdPurplePink,
+                    placeholderColor = ColorOnSurfaceVariantDark,
+                    leadingIconColor = ColorOnSurfaceVariantDark,
                 )
             )
             Spacer(modifier = Modifier.height(8.dp))
@@ -168,7 +183,7 @@ fun LoginScreen(
             //forgot pwd
             Text(
                 text = "Quên mật khẩu?",
-                color = Color(0xFF2196F3),
+                color = ColorColdPurplePink,
                 fontSize = 14.sp,
                 modifier = Modifier
                     .align(Alignment.End)
@@ -189,9 +204,9 @@ fun LoginScreen(
                     .fillMaxWidth()
                     .height(50.dp),
                 shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(Color(0xFF2186F3))
+                colors = ButtonDefaults.buttonColors(ColorColdPurplePink)
             ) {
-                Text("Login", fontSize = 16.sp)
+                Text("Login", fontSize = 16.sp, color = ColorOnSurfaceDark)
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -201,9 +216,13 @@ fun LoginScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Divider(modifier = Modifier.weight(1f), color = Color.Gray)
-                Text(text = " Hoặc đăng nhập bằng ", color = Color.Gray, fontSize = 14.sp)
-                Divider(modifier = Modifier.weight(1f), color = Color.Gray)
+                Divider(modifier = Modifier.weight(1f), color = ColorOnSurfaceVariantDark)
+                Text(
+                    text = " Hoặc đăng nhập bằng ",
+                    color = ColorOnSurfaceVariantDark,
+                    fontSize = 14.sp
+                )
+                Divider(modifier = Modifier.weight(1f), color = ColorOnSurfaceVariantDark)
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -216,9 +235,9 @@ fun LoginScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
-                border = BorderStroke(1.dp, Color.Gray),
+                border = BorderStroke(1.dp, ColorOnSurfaceVariantDark),
                 shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.outlinedButtonColors(Color.White)
+                colors = ButtonDefaults.outlinedButtonColors(ColorOnSurfaceDark)
             ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_google),

@@ -15,13 +15,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.ninhttd.moneycatcher.ui.theme.ColorColdPurplePink
 
 @Composable
 fun SettingRow(item: SettingItem, modifier: Modifier = Modifier) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color(0xFF1E1E1E), RoundedCornerShape(12.dp))
+            .background(ColorColdPurplePink, RoundedCornerShape(12.dp))
             .padding(16.dp)
             .clickable {
                 item.onItemClick.invoke()

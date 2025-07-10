@@ -23,6 +23,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.ninhttd.moneycatcher.ui.theme.ColorColdPurplePink
+import com.ninhttd.moneycatcher.ui.theme.ColorPinkPrimaryContainer
 import java.time.LocalDate
 
 
@@ -53,7 +55,7 @@ fun DatePickerRow(
                 datePickerDialog.show()
             },
         shape = RoundedCornerShape(8.dp),
-        color = Color(0xFF1E1E1E)
+        color = ColorColdPurplePink
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -66,7 +68,7 @@ fun DatePickerRow(
                 Text(
                     "Ngày",
                     fontWeight = FontWeight.Bold,
-                    color = Color.Gray,
+                    color = ColorPinkPrimaryContainer,
                     fontSize = 12.sp
                 )
                 Text(

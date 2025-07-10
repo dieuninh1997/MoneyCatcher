@@ -32,12 +32,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.ninhttd.moneycatcher.common.TransactionType
 import com.ninhttd.moneycatcher.domain.model.Category
 import com.ninhttd.moneycatcher.domain.model.Transaction
-import com.ninhttd.moneycatcher.domain.model.TransactionType
 import com.ninhttd.moneycatcher.domain.model.Wallet
 import com.ninhttd.moneycatcher.navigation.Screen
 import com.ninhttd.moneycatcher.ui.screen.add.AddNewiewModel
+import com.ninhttd.moneycatcher.ui.theme.ColorPastelOrange
+import com.ninhttd.moneycatcher.ui.theme.ColorPinkPrimary
+import com.ninhttd.moneycatcher.ui.theme.ColorPinkPrimaryContainer
+import com.ninhttd.moneycatcher.ui.theme.ColorPositiveGreen
 import kotlinx.coroutines.launch
 
 @Composable
@@ -76,7 +80,7 @@ fun AddNewScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(ColorPinkPrimary)
             .padding(WindowInsets.statusBars.asPaddingValues())
     ) {
 
@@ -104,13 +108,13 @@ fun AddNewScreen(
                         walletId = currentWalletId.toString(),
                         categoryId = category?.id.toString(),
                         transactionType = transactionType,
-                        amount = money,
+                        amount = money.toLong(),
                         note = note,
                         transactionDate = date,
                     )
                 ) { success ->
                     if (success) {
-                        Toast.makeText(context, "Add success!", Toast.LENGTH_LONG).show()
+                        Toast.makeText(context, "Nhập thành công!", Toast.LENGTH_LONG).show()
                     } else {
                         Toast.makeText(context, "Error!!", Toast.LENGTH_LONG).show()
                     }
@@ -135,7 +139,7 @@ fun FABGroup(modifier: Modifier = Modifier, onNavigateNote: (String) -> Unit) {
             onClick = {
                 onNavigateNote(Screen.VoiceNote.route)
             },
-            containerColor = Color.Blue
+            containerColor = ColorPastelOrange
         ) {
             Icon(Icons.Default.Mic, contentDescription = null, tint = Color.White)
         }
@@ -144,7 +148,7 @@ fun FABGroup(modifier: Modifier = Modifier, onNavigateNote: (String) -> Unit) {
             onClick = {
                 onNavigateNote(Screen.ManualNote.route)
             },
-            contentColor = Color.Blue
+            contentColor = ColorPositiveGreen
         ) {
             Icon(Icons.AutoMirrored.Filled.Message, contentDescription = null, tint = Color.White)
         }

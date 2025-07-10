@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.ninhttd.moneycatcher.common.Constants.EXPENSE_TAB
 import com.ninhttd.moneycatcher.common.Constants.INCOME_TAB
+import com.ninhttd.moneycatcher.ui.theme.ColorMutedPinkGray
 import java.nio.file.WatchEvent
 
 @Composable
@@ -26,7 +27,7 @@ fun ExpenseIncomeTab(
         modifier = Modifier
             .fillMaxWidth()
             .height(48.dp)
-            .background(Color.DarkGray),
+            .background(ColorMutedPinkGray),
         horizontalArrangement = Arrangement.Absolute.SpaceEvenly
     ) {
         EITabItem(
