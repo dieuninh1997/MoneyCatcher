@@ -108,7 +108,7 @@ fun WalletItem(
             )
             Spacer(modifier = Modifier.width(6.dp))
             Text(
-                "${formatMoney(wallet.balance)}VND",
+                "${formatMoney(wallet.balance)}₫",
                 color = if (isSelected) ColorColdPurplePink else ColorPinkPrimary,
                 fontSize = 13.sp,
                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,

@@ -44,7 +44,7 @@ fun TopSpendingItem(
             Column(Modifier.weight(1f)) {
                 Text(title, color = Color.White, fontWeight = FontWeight.Medium)
                 Text(
-                    "${formatMoney(amount)}  (${String.format("%.2f", percentage)}%)",
+                    "${formatMoney(amount)}₫ (${String.format("%.2f", percentage)}%)",
                     color = ColorOnSurfaceVariantDark,
                     fontSize = 12.sp
                 )

@@ -27,7 +27,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ninhttd.moneycatcher.common.TimeFilter
+import com.ninhttd.moneycatcher.common.hiltActivityViewModel
 import com.ninhttd.moneycatcher.domain.model.CategorySummary
 import com.ninhttd.moneycatcher.domain.model.Wallet
 import com.ninhttd.moneycatcher.navigation.Screen
@@ -35,29 +37,32 @@ import com.ninhttd.moneycatcher.ui.screen.add.component.formatMoney
 import com.ninhttd.moneycatcher.ui.screen.home.component.BalanceHeader
 import com.ninhttd.moneycatcher.ui.screen.home.component.Chart
 import com.ninhttd.moneycatcher.ui.screen.home.component.TopSpendingSection
+import com.ninhttd.moneycatcher.ui.screen.main.MainSharedViewModel
 import com.ninhttd.moneycatcher.ui.theme.ColorPinkPrimary
 
 @Composable
 fun HomeScreen(
     onNavigateDetails: (String) -> Unit,
     onNavigateSettings: () -> Unit,
-    viewModel: HomViewModel = hiltViewModel(),
+    viewModel: HomViewModel = hiltViewModel()
 ) {
+    val mainViewModal: MainSharedViewModel = hiltActivityViewModel()
+    val walletList by mainViewModal.walletList.collectAsState()
+    val currentWalletId by mainViewModal.currentWalletId.collectAsState(initial = null)
+    val currentWallet by mainViewModal.currentWallet.collectAsState(initial = null)
+
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val walletList by viewModel.walletList.collectAsState()
-    val currentWallet by viewModel.currentWallet.collectAsState(initial = null)
-    val currentWalletId by viewModel.currentWalletId.collectAsState(initial = null)
     val topCategories by viewModel.topSpendingCategories.collectAsState()
     val timeFilter by viewModel.timeFilter.collectAsState()
 
 
     LaunchedEffect(Unit) {
-        viewModel.getWalletList()
+        mainViewModal.getWalletList()
     }
 
     LaunchedEffect(walletList) {
-        if (walletList.isNotEmpty()) {
-            viewModel.setCurrentWalletId(walletList.first().id)
+        if (mainViewModal.currentWalletId.value == null && walletList.isNotEmpty()) {
+            mainViewModal.setCurrentWalletId(walletList.first().id)
         }
     }
 
@@ -114,7 +119,7 @@ fun HomeScreen(
         ) {
             Column {
                 BalanceHeader(
-                    formatMoney(currentWallet?.balance ?: 0),
+                    "${formatMoney(currentWallet?.balance ?: 0)}₫",
                     isBalanceVisible,
                     onToggleVisibility = { isBalanceVisible = !isBalanceVisible },
                     onSearchClick = {

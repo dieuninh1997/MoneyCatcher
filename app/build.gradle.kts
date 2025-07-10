@@ -88,7 +88,6 @@ dependencies {
     implementation(libs.logging.interceptor)
 
     // Compose
-    // Compose
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.ui)
     implementation(libs.ui.graphics)

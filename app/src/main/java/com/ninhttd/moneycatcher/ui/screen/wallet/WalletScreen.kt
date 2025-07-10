@@ -15,9 +15,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.ninhttd.moneycatcher.common.hiltActivityViewModel
 import com.ninhttd.moneycatcher.navigation.Screen
 import com.ninhttd.moneycatcher.ui.screen.add.component.WalletPickerRow
 import com.ninhttd.moneycatcher.ui.screen.editcategory.TopBar
+import com.ninhttd.moneycatcher.ui.screen.main.MainSharedViewModel
 import com.ninhttd.moneycatcher.ui.screen.wallet.component.AddWalletButton
 
 @Composable
@@ -27,7 +29,11 @@ fun WalletScreen(
     modifier: Modifier = Modifier,
     viewModel: WalletViewModel = hiltViewModel()
 ) {
-    val walletList by viewModel.walletList.collectAsState()
+    val mainViewModal: MainSharedViewModel = hiltActivityViewModel()
+    val walletList by mainViewModal.walletList.collectAsState()
+    val currentWalletId by mainViewModal.currentWalletId.collectAsState(initial = null)
+    val currentWallet by mainViewModal.currentWallet.collectAsState(initial = null)
+
 
     Column(
         modifier = Modifier

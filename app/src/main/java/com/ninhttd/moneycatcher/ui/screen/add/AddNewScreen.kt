@@ -33,14 +33,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ninhttd.moneycatcher.common.TransactionType
+import com.ninhttd.moneycatcher.common.hiltActivityViewModel
 import com.ninhttd.moneycatcher.domain.model.Category
 import com.ninhttd.moneycatcher.domain.model.Transaction
 import com.ninhttd.moneycatcher.domain.model.Wallet
 import com.ninhttd.moneycatcher.navigation.Screen
 import com.ninhttd.moneycatcher.ui.screen.add.AddNewiewModel
+import com.ninhttd.moneycatcher.ui.screen.main.MainSharedViewModel
+import com.ninhttd.moneycatcher.ui.screen.wallet.WalletViewModel
 import com.ninhttd.moneycatcher.ui.theme.ColorPastelOrange
 import com.ninhttd.moneycatcher.ui.theme.ColorPinkPrimary
-import com.ninhttd.moneycatcher.ui.theme.ColorPinkPrimaryContainer
 import com.ninhttd.moneycatcher.ui.theme.ColorPositiveGreen
 import kotlinx.coroutines.launch
 
@@ -52,13 +54,15 @@ fun AddNewScreen(
     modifier: Modifier = Modifier,
     viewModel: AddNewiewModel = hiltViewModel()
 ) {
-    val context = LocalContext.current
-    val categoriesList = viewModel.categoriesList.collectAsState(initial = listOf()).value
+    val mainViewModal: MainSharedViewModel = hiltActivityViewModel()
+    val walletList by mainViewModal.walletList.collectAsState()
+    val currentWalletId by mainViewModal.currentWalletId.collectAsState(initial = null)
+    val currentWallet by mainViewModal.currentWallet.collectAsState(initial = null)
 
-    val walletList by viewModel.walletList.collectAsState()
-    val currentWallet by viewModel.currentWallet.collectAsState(initial = null)
-    val currentWalletId by viewModel.currentWalletId.collectAsState(initial = null)
-    val currentUser by viewModel.currentUser.collectAsState()
+
+    val context = LocalContext.current
+    val categoriesList = mainViewModal.categoriesList.collectAsState(initial = listOf()).value
+    val currentUser by mainViewModal.currentUser.collectAsState()
 
     val pagerState = rememberPagerState(
         initialPage = 1,
@@ -68,12 +72,12 @@ fun AddNewScreen(
 
 
     LaunchedEffect(Unit) {
-        viewModel.getWalletList()
+        mainViewModal.getWalletList()
     }
 
     LaunchedEffect(walletList) {
-        if (walletList.isNotEmpty()) {
-            viewModel.setCurrentWalletId(walletList.first().id)
+        if (currentWalletId == null && walletList.isNotEmpty()) {
+            mainViewModal.setCurrentWalletId(walletList.first().id)
         }
     }
 
@@ -99,10 +103,10 @@ fun AddNewScreen(
             onNavigateEditCategory = onNavigateEditCategory,
             onNavigateDetails = onNavigateDetails,
             onChangeCurrentWalletId = { id ->
-                viewModel.setCurrentWalletId(id)
+                mainViewModal.setCurrentWalletId(id)
             },
-            onSubmit = { money, note, transactionType, date, category ->
-                viewModel.createTransaction(
+            onSubmit = { money, note, transactionType, date, category, onResetInputing ->
+                mainViewModal.createTransaction(
                     Transaction(
                         userId = currentUser?.id.toString(),
                         walletId = currentWalletId.toString(),
@@ -115,6 +119,7 @@ fun AddNewScreen(
                 ) { success ->
                     if (success) {
                         Toast.makeText(context, "Nhập thành công!", Toast.LENGTH_LONG).show()
+                        onResetInputing()
                     } else {
                         Toast.makeText(context, "Error!!", Toast.LENGTH_LONG).show()
                     }
@@ -169,7 +174,12 @@ fun MainContent(
     onNavigateDetails: (String) -> Unit,
     onChangeCurrentWalletId: (String) -> Unit,
     modifier: Modifier = Modifier,
-    onSubmit: (String, String, TransactionType, java.time.LocalDate, Category?) -> Unit
+    onSubmit: (
+        String,
+        String,
+        TransactionType,
+        java.time.LocalDate, Category?, onResetInput: () -> Unit
+    ) -> Unit
 ) {
     Column {
         //tabs
@@ -191,7 +201,7 @@ fun MainContent(
                     wallets = wallets,
                     onNavigateEditCategory = onNavigateEditCategory,
                     onNavigateDetails = onNavigateDetails,
-                    onSubmit = onSubmit
+                    onSubmit = onSubmit,
                 )
 
                 1 -> IncomeContent(
@@ -220,7 +230,12 @@ fun IncomeContent(
     onNavigateEditCategory: () -> Unit,
     onNavigateDetails: (String) -> Unit,
     modifier: Modifier = Modifier,
-    onSubmit: (String, String, TransactionType, java.time.LocalDate, Category?) -> Unit
+    onSubmit: (
+        String,
+        String,
+        TransactionType,
+        java.time.LocalDate, Category?, onResetInputing: () -> Unit
+    ) -> Unit
 ) {
     TransactionContent(
         onChangeCurrentWalletId = onChangeCurrentWalletId,
@@ -246,7 +261,7 @@ fun ExpenseContent(
     onNavigateEditCategory: () -> Unit,
     onNavigateDetails: (String) -> Unit,
     modifier: Modifier = Modifier,
-    onSubmit: (String, String, TransactionType, java.time.LocalDate, Category?) -> Unit
+    onSubmit: (String, String, TransactionType, java.time.LocalDate, Category?, onResetInputing: () -> Unit) -> Unit
 ) {
     TransactionContent(
         onChangeCurrentWalletId = onChangeCurrentWalletId,

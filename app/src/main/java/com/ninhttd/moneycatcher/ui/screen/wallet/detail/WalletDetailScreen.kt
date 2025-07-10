@@ -40,10 +40,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.ninhttd.moneycatcher.common.hiltActivityViewModel
 import com.ninhttd.moneycatcher.di.SessionManager
 import com.ninhttd.moneycatcher.navigation.Screen
 import com.ninhttd.moneycatcher.ui.screen.add.component.formatMoney
 import com.ninhttd.moneycatcher.ui.screen.editcategory.TopBar
+import com.ninhttd.moneycatcher.ui.screen.main.MainSharedViewModel
 import com.ninhttd.moneycatcher.ui.screen.wallet.WalletViewModel
 import com.ninhttd.moneycatcher.ui.screen.wallet.component.SettingSwitchRow
 
@@ -55,8 +57,10 @@ fun WalletDetailScreen(
     modifier: Modifier = Modifier,
     viewModel: WalletViewModel = hiltViewModel()
 ) {
-    val walletList by viewModel.walletList.collectAsState()
-    val currentWallet by viewModel.currentWallet.collectAsState(initial = null)
+    val mainViewModal: MainSharedViewModel = hiltActivityViewModel()
+    val walletList by mainViewModal.walletList.collectAsState()
+    val currentWallet by mainViewModal.currentWallet.collectAsState(initial = null)
+
     var selectedWallet by remember { mutableStateOf(currentWallet) }
     var showConfirmDialog by remember { mutableStateOf(false) }
     val currentUser = remember { SessionManager.currentUser }
@@ -64,7 +68,7 @@ fun WalletDetailScreen(
     LaunchedEffect(walletList) {
         if (walletList.isNotEmpty() && currentWallet == null) {
             selectedWallet = walletList.find { it.id == walletId }
-            viewModel.setCurrentWalletId(selectedWallet?.id.toString())
+            mainViewModal.setCurrentWalletId(selectedWallet?.id.toString())
         }
     }
 
@@ -101,7 +105,7 @@ fun WalletDetailScreen(
                         color = Color.White
                     )
                     Text(
-                        "${formatMoney(selectedWallet?.balance ?: 0)}VND",
+                        "${formatMoney(selectedWallet?.balance ?: 0)}₫",
                         color = Color.Green,
                         fontWeight = FontWeight.Bold
                     )
@@ -112,14 +116,14 @@ fun WalletDetailScreen(
                 label = "Đặt làm ví mặc định",
                 checked = selectedWallet?.isDefault == true,
                 onCheckedChange = {
-                    viewModel.setWalletAsDefault(currentWallet?.id.toString())
+                    mainViewModal.setWalletAsDefault(currentWallet?.id.toString())
                 }
             )
             // Số dư ban đầu
             Column(modifier = Modifier.padding(16.dp)) {
                 Text("Số dư ban đầu", color = Color.Gray)
                 Text(
-                    "${formatMoney(selectedWallet?.initBalance ?: 0)}VND",
+                    "${formatMoney(selectedWallet?.initBalance ?: 0)}₫",
                     color = Color.White,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
@@ -187,7 +191,7 @@ fun WalletDetailScreen(
                 confirmButton = {
                     TextButton(onClick = {
                         showConfirmDialog = false
-                        viewModel.deleteWallet(walletId) // hoặc logic xoá của bạn
+                        mainViewModal.deleteWallet(walletId) // hoặc logic xoá của bạn
                         onNavigateUp()
                     }) {
                         Text("Xoá", color = Color.Red)

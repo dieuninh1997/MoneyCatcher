@@ -64,7 +64,13 @@ fun TransactionContent(
     wallets: List<Wallet>,
     date: String,
     categoriesList: List<Category>?,
-    onSubmit: (note: String, amount: String, type: TransactionType, date: LocalDate, category: Category?) -> Unit,
+    onSubmit: (
+        note: String,
+        amount: String,
+        type: TransactionType,
+        date: LocalDate,
+        category: Category?, onResetInputing: () -> Unit
+    ) -> Unit,
     onNavigateEditCategory: () -> Unit,
     onNavigateDetails: (String) -> Unit,
     transactionType: TransactionType,
@@ -90,11 +96,9 @@ fun TransactionContent(
 
             //vi
             WalletPickerRow(
-                currentWallet,
-                onClick = {
+                currentWallet, onClick = {
                     showBottomSheet = true
-                },
-                onNavigateDetails = onNavigateDetails
+                }, onNavigateDetails = onNavigateDetails
             )
             Spacer(modifier = Modifier.height(1.dp))
 
@@ -104,11 +108,9 @@ fun TransactionContent(
             Spacer(modifier = Modifier.height(5.dp))
 
             NoteInput(
-                note = note,
-                onNoteChange = {
+                note = note, onNoteChange = {
                     note = it
-                }
-            )
+                })
             Spacer(modifier = Modifier.height(5.dp))
 
             MoneyInput(money, onAmountChange = {
@@ -117,19 +119,21 @@ fun TransactionContent(
             Spacer(modifier = Modifier.height(5.dp))
 
             CategoryPickerRow(
-                categoriesList,
-                selectedCategory = selectedCategory,
-                onCategorySelected = {
+                categoriesList, selectedCategory = selectedCategory, onCategorySelected = {
                     selectedCategory = it
-                },
-                onNavigateEditCategory = onNavigateEditCategory
+                }, onNavigateEditCategory = onNavigateEditCategory
             )
         }
 
         Button(
             onClick = {
                 onSubmit(
-                    money, note, transactionType, selectedDate, selectedCategory
+                    money, note, transactionType, selectedDate, selectedCategory, {
+                        note = ""
+                        money = ""
+                        selectedDate = LocalDate.now()
+                        selectedCategory = null
+                    }
                 )
             },
             modifier = Modifier
@@ -150,8 +154,7 @@ fun TransactionContent(
                     onChangeCurrentWalletId(it.id)
                     showBottomSheet = false
                 },
-                onDismiss = { showBottomSheet = false }
-            )
+                onDismiss = { showBottomSheet = false })
         }
     }
 }

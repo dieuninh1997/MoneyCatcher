@@ -61,7 +61,7 @@ fun WalletPickerRow(
                         color =ColorPinkPrimaryContainer,
                         fontSize = 12.sp
                     )
-                    Text("${formatMoney(wallet.balance)} VND", color = Color.White)
+                    Text("${formatMoney(wallet.balance)}₫", color = Color.White)
                 }
 
                 Icon(

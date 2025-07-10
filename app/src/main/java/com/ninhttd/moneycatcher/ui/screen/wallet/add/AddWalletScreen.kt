@@ -36,10 +36,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.ninhttd.moneycatcher.common.hiltActivityViewModel
 import com.ninhttd.moneycatcher.di.SessionManager
 import com.ninhttd.moneycatcher.domain.model.Wallet
 import com.ninhttd.moneycatcher.ui.screen.wallet.component.SettingSwitchRow
 import com.ninhttd.moneycatcher.ui.screen.editcategory.TopBar
+import com.ninhttd.moneycatcher.ui.screen.main.MainSharedViewModel
 import com.ninhttd.moneycatcher.ui.screen.wallet.WalletViewModel
 
 @Composable
@@ -48,6 +50,7 @@ fun AddWalletScreen(
     modifier: Modifier = Modifier,
     viewModel: WalletViewModel = hiltViewModel()
 ) {
+    val mainViewModal: MainSharedViewModel = hiltActivityViewModel()
     var walletName by remember { mutableStateOf("") }
     var initialBalance by remember { mutableStateOf("") }
     var isDefault by remember { mutableStateOf(false) }
@@ -156,7 +159,7 @@ fun AddWalletScreen(
                         isDefault = isDefault,
                         initBalance = initialBalance.toLong()
                     )
-                    viewModel.createWallet(wallet) { success ->
+                    mainViewModal.createWallet(wallet) { success ->
                         if(success) {
                             //save prefs
 
