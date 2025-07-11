@@ -107,7 +107,7 @@ fun AddWalletScreen(
                     )
                 }
 
-                Divider(color = Color.DarkGray, modifier = Modifier.fillMaxWidth())
+                Divider(color = ColorPinkPrimary, modifier = Modifier.fillMaxWidth())
 
                 // Switch: Đặt làm ví mặc định
                 SettingSwitchRow(
@@ -117,7 +117,7 @@ fun AddWalletScreen(
                     onCheckedChange = { isDefault = it }
                 )
 
-                Divider(color = Color.DarkGray, modifier = Modifier.fillMaxWidth())
+                Divider(color = ColorPinkPrimary, modifier = Modifier.fillMaxWidth())
                 Spacer(Modifier.height(16.dp))
                 // Nhập số dư ban đầu
                 Column {

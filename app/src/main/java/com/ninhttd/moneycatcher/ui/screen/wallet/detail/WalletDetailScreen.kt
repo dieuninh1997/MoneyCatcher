@@ -15,6 +15,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AlertDialog
+import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
@@ -48,6 +49,11 @@ import com.ninhttd.moneycatcher.ui.screen.editcategory.TopBar
 import com.ninhttd.moneycatcher.ui.screen.main.MainSharedViewModel
 import com.ninhttd.moneycatcher.ui.screen.wallet.WalletViewModel
 import com.ninhttd.moneycatcher.ui.screen.wallet.component.SettingSwitchRow
+import com.ninhttd.moneycatcher.ui.theme.ColorColdPurplePink
+import com.ninhttd.moneycatcher.ui.theme.ColorMutedPinkGray
+import com.ninhttd.moneycatcher.ui.theme.ColorOnSurfaceVariantDark
+import com.ninhttd.moneycatcher.ui.theme.ColorPinkPrimary
+import com.ninhttd.moneycatcher.ui.theme.ColorPinkPrimaryContainer
 
 @Composable
 fun WalletDetailScreen(
@@ -76,7 +82,7 @@ fun WalletDetailScreen(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .background(Color.Black)
+            .background(ColorPinkPrimary)
             .padding(16.dp)
     ) {
         TopBar(title = "Chi tiết ví", onBackPress = {
@@ -86,7 +92,7 @@ fun WalletDetailScreen(
         Spacer(Modifier.height(24.dp))
         Card(
             modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = Color.DarkGray),
+            colors = CardDefaults.cardColors(containerColor = ColorColdPurplePink),
             shape = RoundedCornerShape(12.dp)
         ) {
             Row(
@@ -106,11 +112,12 @@ fun WalletDetailScreen(
                     )
                     Text(
                         "${formatMoney(selectedWallet?.balance ?: 0)}₫",
-                        color = Color.Green,
+                        color = ColorPinkPrimaryContainer,
                         fontWeight = FontWeight.Bold
                     )
                 }
             }
+            Divider(color = ColorPinkPrimary, modifier = Modifier.fillMaxWidth())
             SettingSwitchRow(
                 icon = Icons.Default.AccountBalanceWallet,
                 label = "Đặt làm ví mặc định",
@@ -119,6 +126,7 @@ fun WalletDetailScreen(
                     mainViewModal.setWalletAsDefault(currentWallet?.id.toString())
                 }
             )
+            Divider(color = ColorPinkPrimary, modifier = Modifier.fillMaxWidth())
             // Số dư ban đầu
             Column(modifier = Modifier.padding(16.dp)) {
                 Text("Số dư ban đầu", color = Color.Gray)
@@ -138,7 +146,7 @@ fun WalletDetailScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp)
-                .background(Color.DarkGray, RoundedCornerShape(12.dp))
+                .background(ColorColdPurplePink, RoundedCornerShape(12.dp))
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -151,7 +159,7 @@ fun WalletDetailScreen(
             Box(
                 Modifier
                     .clip(RoundedCornerShape(8.dp))
-                    .background(Color(0xFF2196F3))
+                    .background(ColorMutedPinkGray)
                     .padding(horizontal = 8.dp, vertical = 4.dp)
             ) {
                 Text("Chủ sở hữu", color = Color.White, fontSize = 12.sp)
@@ -219,7 +227,7 @@ fun ActionRow(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .background(Color.DarkGray, RoundedCornerShape(12.dp))
+            .background(ColorColdPurplePink, RoundedCornerShape(12.dp))
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

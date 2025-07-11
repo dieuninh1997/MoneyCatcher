@@ -24,7 +24,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,7 +43,6 @@ import com.ninhttd.moneycatcher.domain.model.Wallet
 import com.ninhttd.moneycatcher.navigation.Screen
 import com.ninhttd.moneycatcher.ui.screen.add.AddNewiewModel
 import com.ninhttd.moneycatcher.ui.screen.main.MainSharedViewModel
-import com.ninhttd.moneycatcher.ui.screen.wallet.WalletViewModel
 import com.ninhttd.moneycatcher.ui.theme.ColorPastelOrange
 import com.ninhttd.moneycatcher.ui.theme.ColorPinkPrimary
 import com.ninhttd.moneycatcher.ui.theme.ColorPositiveGreen
@@ -64,8 +66,12 @@ fun AddNewScreen(
     val categoriesList = mainViewModal.categoriesList.collectAsState(initial = listOf()).value
     val currentUser by mainViewModal.currentUser.collectAsState()
 
+    var showWarning by remember { mutableStateOf(false) }
+    var warningMessage by remember { mutableStateOf<String?>(null) }
+
+
     val pagerState = rememberPagerState(
-        initialPage = 1,
+        initialPage = 0,
         pageCount = { 2 }
     )
     val coroutineScope = rememberCoroutineScope()
@@ -106,28 +112,46 @@ fun AddNewScreen(
                 mainViewModal.setCurrentWalletId(id)
             },
             onSubmit = { money, note, transactionType, date, category, onResetInputing ->
-                mainViewModal.createTransaction(
-                    Transaction(
-                        userId = currentUser?.id.toString(),
-                        walletId = currentWalletId.toString(),
-                        categoryId = category?.id.toString(),
-                        transactionType = transactionType,
-                        amount = money.toLong(),
-                        note = note,
-                        transactionDate = date,
-                    )
-                ) { success ->
-                    if (success) {
-                        Toast.makeText(context, "Nhập thành công!", Toast.LENGTH_LONG).show()
-                        onResetInputing()
-                    } else {
-                        Toast.makeText(context, "Error!!", Toast.LENGTH_LONG).show()
+                //valid field
+                when {
+                    money.isBlank() -> warningMessage = "Vui lòng nhập số tiền."
+                    category == null -> warningMessage = "Vui lòng chọn danh mục."
+                    else -> {
+                        mainViewModal.createTransaction(
+                            Transaction(
+                                userId = currentUser?.id.toString(),
+                                walletId = currentWalletId.toString(),
+                                categoryId = category?.id.toString(),
+                                transactionType = transactionType,
+                                amount = money.toLong(),
+                                note = note,
+                                transactionDate = date,
+                            )
+                        ) { success ->
+                            if (success) {
+                                Toast.makeText(context, "Nhập thành công!", Toast.LENGTH_LONG)
+                                    .show()
+                                onResetInputing()
+                            } else {
+                                Toast.makeText(context, "Error!!", Toast.LENGTH_LONG).show()
+                            }
+                        }
                     }
                 }
             }
         )
 
         FABGroup(onNavigateNote = onNavigateNote, modifier = Modifier.align(Alignment.BottomEnd))
+
+        warningMessage?.let { message ->
+            WarningDialog(
+                title = "Cảnh báo",
+                message = message,
+                onDismiss = {
+                    warningMessage = null
+                }
+            )
+        }
     }
 }
 
