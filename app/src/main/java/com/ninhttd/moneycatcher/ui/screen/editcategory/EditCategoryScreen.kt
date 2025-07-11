@@ -34,6 +34,7 @@ import com.ninhttd.moneycatcher.domain.model.Category
 import com.ninhttd.moneycatcher.domain.model.Wallet
 import com.ninhttd.moneycatcher.ui.screen.add.component.ExpenseIncomeTab
 import com.ninhttd.moneycatcher.ui.screen.add.component.WalletPickerRow
+import com.ninhttd.moneycatcher.ui.theme.ColorColdPurplePink
 import kotlinx.coroutines.launch
 
 @Composable
@@ -143,7 +144,7 @@ fun TopBar(
         Icon(
             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
             contentDescription = null,
-            tint = Color.White,
+            tint = ColorColdPurplePink,
             modifier = Modifier.clickable {
                 onBackPress()
             }
@@ -155,7 +156,7 @@ fun TopBar(
         ) {
             Text(
                 text = title,
-                color = Color.White,
+                color = ColorColdPurplePink,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.align(Alignment.Center)

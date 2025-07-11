@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.OutlinedTextField
@@ -43,6 +44,11 @@ import com.ninhttd.moneycatcher.ui.screen.wallet.component.SettingSwitchRow
 import com.ninhttd.moneycatcher.ui.screen.editcategory.TopBar
 import com.ninhttd.moneycatcher.ui.screen.main.MainSharedViewModel
 import com.ninhttd.moneycatcher.ui.screen.wallet.WalletViewModel
+import com.ninhttd.moneycatcher.ui.theme.ColorColdPurplePink
+import com.ninhttd.moneycatcher.ui.theme.ColorMutedPinkGray
+import com.ninhttd.moneycatcher.ui.theme.ColorPinkPrimary
+import com.ninhttd.moneycatcher.ui.theme.ColorPinkPrimaryContainer
+import com.ninhttd.moneycatcher.ui.theme.ColorZeroWhite
 
 @Composable
 fun AddWalletScreen(
@@ -61,10 +67,10 @@ fun AddWalletScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF1C1C1E))
+            .background(ColorPinkPrimary)
             .padding(16.dp)
     ) {
-        Column {
+        Column () {
             TopBar(title = "Thêm ví", onBackPress = {
                 onNavigateUp()
             })
@@ -74,7 +80,7 @@ fun AddWalletScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color(0xFF2C2C2E), RoundedCornerShape(12.dp))
+                    .background(ColorColdPurplePink, RoundedCornerShape(12.dp))
                     .padding(16.dp)
             ) {
                 // Nhập tên ví
@@ -90,7 +96,7 @@ fun AddWalletScreen(
                     OutlinedTextField(
                         value = walletName,
                         onValueChange = { walletName = it },
-                        placeholder = { Text("Nhập tên ví", color = Color.Gray) },
+                        placeholder = { Text("Nhập tên ví", color = ColorPinkPrimaryContainer) },
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             textColor = Color.White,
                             cursorColor = Color.White,
@@ -115,11 +121,11 @@ fun AddWalletScreen(
                 Spacer(Modifier.height(16.dp))
                 // Nhập số dư ban đầu
                 Column {
-                    Text("Số dư ban đầu", color = Color.Gray, fontSize = 14.sp)
+                    Text("Số dư ban đầu", color = ColorPinkPrimaryContainer, fontSize = 14.sp)
                     OutlinedTextField(
                         value = initialBalance,
                         onValueChange = { initialBalance = it },
-                        placeholder = { Text("0 đ", color = Color.Gray) },
+                        placeholder = { Text("0 đ", color = ColorPinkPrimaryContainer) },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -175,9 +181,12 @@ fun AddWalletScreen(
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
                 .height(50.dp),
-            shape = RoundedCornerShape(12.dp)
+            shape = RoundedCornerShape(12.dp),
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = ColorColdPurplePink
+            ),
         ) {
-            Text("Hoàn thành", fontWeight = FontWeight.Bold)
+            Text("Hoàn thành", fontWeight = FontWeight.Bold, color= ColorZeroWhite)
         }
     }
 }

@@ -21,6 +21,7 @@ import com.ninhttd.moneycatcher.ui.screen.add.component.WalletPickerRow
 import com.ninhttd.moneycatcher.ui.screen.editcategory.TopBar
 import com.ninhttd.moneycatcher.ui.screen.main.MainSharedViewModel
 import com.ninhttd.moneycatcher.ui.screen.wallet.component.AddWalletButton
+import com.ninhttd.moneycatcher.ui.theme.ColorPinkPrimary
 
 @Composable
 fun WalletScreen(
@@ -38,7 +39,7 @@ fun WalletScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF1C1C1E))
+            .background(ColorPinkPrimary)
             .padding(16.dp)
     ) {
         // AppBar
@@ -68,6 +69,7 @@ fun WalletScreen(
                         onNavigateDetails(Screen.AddWallet.route)
                     }
                 )
+                Spacer(Modifier.height(8.dp))
             }
         }
 

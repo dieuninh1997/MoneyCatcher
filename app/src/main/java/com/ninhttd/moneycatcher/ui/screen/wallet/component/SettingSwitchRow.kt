@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import com.ninhttd.moneycatcher.ui.theme.ColorColdPurplePink
 
 @Composable
 fun SettingSwitchRow(
@@ -28,7 +29,7 @@ fun SettingSwitchRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color(0xFF2C2C2E), RoundedCornerShape(12.dp))
+            .background(ColorColdPurplePink, RoundedCornerShape(12.dp))
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
