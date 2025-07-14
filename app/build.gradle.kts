@@ -119,11 +119,16 @@ dependencies {
     implementation(platform("io.github.jan-tennert.supabase:bom:3.1.3"))
     implementation("io.github.jan-tennert.supabase:postgrest-kt") // No change
     implementation("io.github.jan-tennert.supabase:auth-kt") // No change
+    implementation("io.github.jan-tennert.supabase:gotrue-kt:2.0.0")
     // Ktor Client - updated to the latest version compatible with Kotlin 2.0.0
     implementation("io.ktor:ktor-client-android:3.0.0")
 
     //DataStore
     implementation("androidx.datastore:datastore-preferences:1.1.7")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
+    implementation(libs.retrofit2.kotlinx.serialization.converter)
+
+    //Lottie
+    implementation(libs.lottie.compose)
 }
 

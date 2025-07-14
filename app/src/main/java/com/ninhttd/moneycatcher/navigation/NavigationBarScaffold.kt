@@ -44,6 +44,7 @@ import com.ninhttd.moneycatcher.ui.screen.home.HomeScreen
 import com.ninhttd.moneycatcher.ui.screen.wallet.WalletScreen
 import com.ninhttd.moneycatcher.ui.screen.wallet.add.AddWalletScreen
 import com.ninhttd.moneycatcher.ui.screen.wallet.detail.WalletDetailScreen
+import com.ninhttd.moneycatcher.ui.screen.wallet.voice.VoiceNoteScreen
 import com.ninhttd.moneycatcher.ui.theme.ColorColdPurplePink
 import com.ninhttd.moneycatcher.ui.theme.ColorMutedPinkGray
 import com.ninhttd.moneycatcher.ui.theme.ColorSurfaceDark
@@ -69,24 +70,28 @@ fun NavigationBarScaffold(
         )
     }
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentDestination = navBackStackEntry?.destination
-    val showNavigationBar = navigationBarScreens.any { it.route == currentDestination?.route }
+    val currentRoute = navBackStackEntry?.destination?.route
+    val notShowBottomBar = currentRoute in listOf(
+        Screen.VoiceNote.route
+    )
 
     Scaffold(
-        bottomBar = { BottomBarWithFab(navController) },
+        bottomBar = { if (!notShowBottomBar) BottomBarWithFab(navController) },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = { navController.navigate(NavigationBarScreen.Add.route) },
-                contentColor = ColorColdPurplePink,
-                backgroundColor = ColorMutedPinkGray,
-                shape = CircleShape,
-                elevation = FloatingActionButtonDefaults.elevation(8.dp)
-            ) {
-                Icon(
-                    Icons.Default.Add,
-                    contentDescription = "Add",
-                    tint = if (currentDestination?.route == NavigationBarScreen.Add.route) ColorColdPurplePink else Color.LightGray
-                )
+            if (!notShowBottomBar) {
+                FloatingActionButton(
+                    onClick = { navController.navigate(NavigationBarScreen.Add.route) },
+                    contentColor = ColorColdPurplePink,
+                    backgroundColor = ColorMutedPinkGray,
+                    shape = CircleShape,
+                    elevation = FloatingActionButtonDefaults.elevation(8.dp)
+                ) {
+                    Icon(
+                        Icons.Default.Add,
+                        contentDescription = "Add",
+                        tint = if (currentRoute == NavigationBarScreen.Add.route) ColorColdPurplePink else Color.LightGray
+                    )
+                }
             }
         },
         floatingActionButtonPosition = FabPosition.Center,
@@ -94,7 +99,7 @@ fun NavigationBarScaffold(
     ) { innerPadding ->
         NavigationBarNavHost(
             navController,
-            startScreen = NavigationBarScreen.Home,
+            startScreen = NavigationBarScreen.Add,
             onNavigateDetails = { route ->
                 navController.navigate(route)
             },
@@ -249,6 +254,11 @@ private fun NavigationBarNavHost(
         }
         composable(route = Screen.Search.route) {
             AddWalletScreen(onNavigateUp = {
+                navController.navigateUp()
+            })
+        }
+        composable(route = Screen.VoiceNote.route) {
+            VoiceNoteScreen(onNavigateUp = {
                 navController.navigateUp()
             })
         }

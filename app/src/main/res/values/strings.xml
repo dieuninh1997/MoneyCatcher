@@ -10,4 +10,10 @@
     <string name="settings_group">Group</string>
     <string name="outcome">Outcome</string>
     <string name="income">Income</string>
+    <string name="voice_notes">Ghi chú giọng nói</string>
+    <string name="cancel">Hủy</string>
+    <string name="record">Ghi âm</string>
+    <string name="confirm">Xác nhận</string>
+    <string name="say_somthing_vv">Nói gì đó để ứng dụng ghi lại giao dịch của bạn</string>
+    <string name="example">Ví dụ: Hôm nay tôi đi siêu thị và tiêu một trăm nghìn</string>
 </resources>

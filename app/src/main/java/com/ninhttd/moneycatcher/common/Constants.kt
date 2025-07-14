@@ -1,5 +1,9 @@
 package com.ninhttd.moneycatcher.common
 
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Locale
+
 object Constants {
     const val BASE_URL = "https://api.coinranking.com/v2/"
     const val PARAM_COIN_ID = "coinId"
@@ -21,4 +25,15 @@ enum class TransactionType(val id: Int, val txName: String, val displayName: Str
 
 enum class TimeFilter {
     WEEKLY, MONTHLY, YEARLY
+}
+
+
+fun formatDate(input: String): String {
+    return try {
+        val parsed = LocalDate.parse(input)
+        val formatter = DateTimeFormatter.ofPattern("EEEE, dd 'tháng' MM yyyy", Locale("vi"))
+        parsed.format(formatter)
+    } catch (e: Exception) {
+        input // fallback
+    }
 }

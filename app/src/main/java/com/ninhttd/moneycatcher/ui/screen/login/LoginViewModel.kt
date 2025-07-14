@@ -7,13 +7,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ninhttd.moneycatcher.di.AppPreferencesManager
 import com.ninhttd.moneycatcher.di.SessionManager
+import com.ninhttd.moneycatcher.domain.model.UserInfo
 import com.ninhttd.moneycatcher.domain.usecase.LoginUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.jan.supabase.auth.user.UserInfo
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 

@@ -1,6 +1,7 @@
 package com.ninhttd.moneycatcher.ui.screen.login
 
-import io.github.jan.supabase.auth.user.UserInfo
+import com.ninhttd.moneycatcher.domain.model.UserInfo
+
 
 sealed class LoginUiState {
     object Idle : LoginUiState()

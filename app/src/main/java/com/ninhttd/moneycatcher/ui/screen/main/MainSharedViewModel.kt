@@ -10,12 +10,12 @@ import com.ninhttd.moneycatcher.di.AppPreferencesManager
 import com.ninhttd.moneycatcher.di.SessionManager
 import com.ninhttd.moneycatcher.domain.model.Category
 import com.ninhttd.moneycatcher.domain.model.Transaction
+import com.ninhttd.moneycatcher.domain.model.UserInfo
 import com.ninhttd.moneycatcher.domain.model.Wallet
 import com.ninhttd.moneycatcher.domain.repository.CategoryRepository
 import com.ninhttd.moneycatcher.domain.repository.TransactionRepository
 import com.ninhttd.moneycatcher.domain.repository.WalletRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.jan.supabase.auth.user.UserInfo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

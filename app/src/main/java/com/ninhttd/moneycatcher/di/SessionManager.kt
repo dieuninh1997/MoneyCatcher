@@ -1,6 +1,7 @@
 package com.ninhttd.moneycatcher.di
 
-import io.github.jan.supabase.auth.user.UserInfo
+import com.ninhttd.moneycatcher.domain.model.UserInfo
+
 
 object SessionManager {
     var currentUser: UserInfo? = null
@@ -17,5 +18,10 @@ object SessionManager {
     suspend fun logout(appPrefs: AppPreferencesManager) {
         currentUser = null
         appPrefs.clearUser()
+    }
+
+
+    fun getAccessToken(): String {
+        return currentUser?.token.orEmpty()
     }
 }
