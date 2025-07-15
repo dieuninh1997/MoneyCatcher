@@ -1,7 +1,6 @@
 package com.ninhttd.moneycatcher.ui.screen.wallet.voice
 
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -20,7 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class VoiceNoteViewModel @Inject constructor(
     private val parseIntentUsecase: ParseIntentUsecase
-): ViewModel() {
+) : ViewModel() {
     private val _intentResult = MutableStateFlow<List<ParseIntentResponse>?>(null)
     val intentResult: StateFlow<List<ParseIntentResponse>?> = _intentResult
 
@@ -49,10 +48,17 @@ class VoiceNoteViewModel @Inject constructor(
         }
     }
 
+    fun removeIntentResult(item: ParseIntentResponse) {
+        val currentList = _intentResult.value?.toMutableList() ?: return
+        currentList.remove(item)
+        _intentResult.value = currentList
+    }
+
     fun resetIntentResult() {
         _intentResult.value = null
         uiState = VoiceNoteUiState.Idle
     }
+
 
     fun markItemAsAdded(index: Int) {
         val currentList = _intentResult.value ?: return

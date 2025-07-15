@@ -77,6 +77,7 @@ import com.ninhttd.moneycatcher.ui.theme.ColorMutedPinkGray
 import com.ninhttd.moneycatcher.ui.theme.ColorPastelOrange
 import com.ninhttd.moneycatcher.ui.theme.ColorPinkPrimary
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -151,14 +152,12 @@ fun VoiceNoteScreen(
                 isShowBtnDelete = showBtnDelete,
                 context = context,
                 onDelete = {
+
                     if (showBtnDelete) {
                         if (isListening) {
                             isListening = false
                             recognizer.destroy()
                         }
-                        spokenText = ""
-                        viewModel.resetIntentResult()
-
                     } else {
                         if (isListening) {
                             isListening = false
@@ -167,6 +166,11 @@ fun VoiceNoteScreen(
                         recognizer.startListening()
                         isListening = true
                     }
+
+                    spokenText = ""
+                    viewModel.resetIntentResult()
+                    showBtnDelete = false
+
                 },
                 onMicTap = {
                     val hasPermission = ContextCompat.checkSelfPermission(
@@ -261,11 +265,8 @@ fun VoiceNoteScreen(
                             walletName = currentWallet?.name ?: "",
                             walletId = currentWallet?.id.toString(),
                             userId = currentUser?.id.toString(),
-                            onDelete = {
-                                viewModel.resetIntentResult()
-                                spokenText = ""
-                                isListening = false
-                                recognizer.destroy()
+                            onDelete = { item ->
+                                viewModel.removeIntentResult(item)
                             },
                             onConfirm = { tx, txIndex ->
                                 mainViewModal.createTransaction(
@@ -299,7 +300,7 @@ fun TransactionsResultCard(
     walletName: String,
     modifier: Modifier = Modifier,
     walletIcon: ImageVector = Icons.Default.AccountBalanceWallet,
-    onDelete: () -> Unit = {},
+    onDelete: (ParseIntentResponse) -> Unit = {},
     onConfirm: (Transaction, Int) -> Unit
 ) {
 
@@ -348,7 +349,7 @@ fun TransactionsResultCard(
 
 
                     // Dòng 3: Ví + số tiền + hành động
-                    Column {
+                    Column(modifier = Modifier.weight(1f)) {
 
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
@@ -370,34 +371,40 @@ fun TransactionsResultCard(
 
                     Spacer(modifier = Modifier.width(8.dp))
 
-                    Column(modifier = Modifier.weight(1f)) {
+                    if (!transaction.isAdded) {
+                        Column {
+                            IconButton(onClick = {
+                                onDelete(transaction)
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = "Xóa",
+                                    tint = Color.Gray
+                                )
+                            }
 
-                        IconButton(onClick = onDelete) {
-                            Icon(
-                                imageVector = Icons.Default.Close,
-                                contentDescription = "Xóa",
-                                tint = Color.Gray
-                            )
-                        }
-
-                        IconButton(onClick = {
-                            val tx = Transaction(
-                                userId = userId,
-                                walletId = walletId,
-                                categoryId = categoryData?.id.toString(),
-                                transactionType = TransactionType.fromId(transaction.transaction_type_id)
-                                    ?: TransactionType.EXPENSE,
-                                amount = transaction.amount,
-                                note = transaction.note,
-                                transactionDate = LocalDate.parse(transaction.transaction_date),
-                            )
-                            onConfirm(tx, index)
-                        }) {
-                            Icon(
-                                imageVector = Icons.Default.Check,
-                                contentDescription = "Xác nhận",
-                                tint = Color.Cyan
-                            )
+                            IconButton(onClick = {
+                                val tx = Transaction(
+                                    userId = userId,
+                                    walletId = walletId,
+                                    categoryId = categoryData?.id.toString(),
+                                    transactionType = TransactionType.fromId(transaction.transaction_type_id)
+                                        ?: TransactionType.EXPENSE,
+                                    amount = transaction.amount,
+                                    note = transaction.note,
+                                    transactionDate = LocalDate.parse(
+                                        transaction.transaction_date,
+                                        DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")
+                                    ),
+                                )
+                                onConfirm(tx, index)
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = "Xác nhận",
+                                    tint = Color.Cyan
+                                )
+                            }
                         }
                     }
                 }
@@ -450,13 +457,18 @@ fun BottomBarAction(
                 isListening = isListening
             )
 
-            IconButton(onClick = onConfirm, modifier = Modifier.size(56.dp)) {
+            IconButton(
+                onClick = onConfirm,
+                modifier = Modifier.size(56.dp),
+                enabled = !isShowBtnDelete
+            ) {
                 Icon(
                     imageVector = Icons.Default.Check,
                     contentDescription = context.getString(R.string.confirm),
-                    tint = Color.White
+                    tint = if (!isShowBtnDelete) Color.White else Color.Gray
                 )
             }
+
         }
 
         Spacer(modifier = Modifier.height(16.dp))

@@ -53,10 +53,10 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ninhttd.moneycatcher.R
+import com.ninhttd.moneycatcher.di.SessionManager
 import com.ninhttd.moneycatcher.ui.theme.ColorColdPurplePink
 import com.ninhttd.moneycatcher.ui.theme.ColorOnSurfaceDark
 import com.ninhttd.moneycatcher.ui.theme.ColorOnSurfaceVariantDark
-import com.ninhttd.moneycatcher.ui.theme.ColorPastelOrange
 
 
 @Composable
@@ -276,7 +276,6 @@ fun LoginScreen(
                     )
                 }
             }
-
             else -> Unit
         }
     }

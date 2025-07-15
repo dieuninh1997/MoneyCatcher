@@ -1,6 +1,8 @@
 package com.ninhttd.moneycatcher.di
 
 import android.content.Context
+import android.util.Log
+import androidx.core.content.edit
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -14,8 +16,10 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
+
 
 val Context.appDataStore: DataStore<Preferences> by preferencesDataStore(name = "app_prefs")
 
@@ -24,6 +28,7 @@ class AppPreferencesManager @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
     private val dataStore = context.appDataStore
+
     companion object {
         val WALLET_LIST_KEY = stringPreferencesKey("wallet_list")
         val USER_INFO_KEY = stringPreferencesKey("user_info")
@@ -36,8 +41,10 @@ class AppPreferencesManager @Inject constructor(
     }
 
     suspend fun setUser(user: UserInfo) {
+        val json = Json.encodeToString(user)
+        Timber.tag("AppPrefs").d("Saved user: $json")
         dataStore.edit { prefs ->
-            prefs[USER_INFO_KEY] = Json.encodeToString(user)
+            prefs[USER_INFO_KEY] = json
         }
     }
 
@@ -48,9 +55,15 @@ class AppPreferencesManager @Inject constructor(
     }
 
     suspend fun getUser(): UserInfo? {
-        val prefs = context.appDataStore.data.first()
-        val json = prefs[USER_INFO_KEY]
-        return json?.let { Json.decodeFromString<UserInfo>(it) }
+        val prefs = dataStore.data.first()
+        val json = prefs[USER_INFO_KEY] ?: return null
+        Timber.tag("AppPrefs").d("Loaded user: $json")
+        return try {
+            Json.decodeFromString<UserInfo>(json)
+        }catch (e: Exception) {
+            Timber.tag("AppPrefs").d("Error decoding user: ${e.message}")
+            null
+        }
     }
 
     suspend fun saveWalletList(wallets: List<Wallet>) {

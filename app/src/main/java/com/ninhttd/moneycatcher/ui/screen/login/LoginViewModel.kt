@@ -44,6 +44,11 @@ class LoginViewModel @Inject constructor(
             userState = result.getOrNull()
             SessionManager.currentUser = userState
             _uiState.value = if (result.isSuccess) {
+                val user = result.getOrNull()
+                if (user != null) {
+                    SessionManager.login(user, appPrefs)
+                }
+
                 LoginUiState.Success(result)
             } else {
                 LoginUiState.Error(result.exceptionOrNull()?.message ?: "unknow error")
