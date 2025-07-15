@@ -175,7 +175,7 @@ fun FABGroup(modifier: Modifier = Modifier, onNavigateNote: (String) -> Unit) {
 
         FloatingActionButton(
             onClick = {
-                onNavigateNote(Screen.ManualNote.route)
+                onNavigateNote(Screen.OrcInvoice.route)
             },
             contentColor = ColorPositiveGreen
         ) {

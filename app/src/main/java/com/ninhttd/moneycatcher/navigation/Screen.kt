@@ -7,7 +7,7 @@ sealed class Screen(val route: String) {
     data object Login: Screen("login_screen")
     data object Details: Screen("details_screen")
     data object VoiceNote: Screen("voice_note_screen")
-    data object ManualNote: Screen("manual_note_screen")
+    data object OrcInvoice: Screen("orc_invoice_screen")
     data object Settings: Screen("settings_screen")
     data object EditCategory: Screen("edit_category_screen")
     data object Wallet: Screen("wallet_screen")

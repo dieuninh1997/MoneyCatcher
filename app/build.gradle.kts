@@ -130,5 +130,8 @@ dependencies {
 
     //Lottie
     implementation(libs.lottie.compose)
+
+    //Coil for Uri, URL
+    implementation(libs.coil.compose)
 }
 

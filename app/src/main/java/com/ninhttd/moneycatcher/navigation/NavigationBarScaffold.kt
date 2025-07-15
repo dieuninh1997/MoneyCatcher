@@ -44,6 +44,7 @@ import com.ninhttd.moneycatcher.ui.screen.home.HomeScreen
 import com.ninhttd.moneycatcher.ui.screen.wallet.WalletScreen
 import com.ninhttd.moneycatcher.ui.screen.wallet.add.AddWalletScreen
 import com.ninhttd.moneycatcher.ui.screen.wallet.detail.WalletDetailScreen
+import com.ninhttd.moneycatcher.ui.screen.wallet.ocr.OcrInvoiceScreen
 import com.ninhttd.moneycatcher.ui.screen.wallet.voice.VoiceNoteScreen
 import com.ninhttd.moneycatcher.ui.theme.ColorColdPurplePink
 import com.ninhttd.moneycatcher.ui.theme.ColorMutedPinkGray
@@ -261,6 +262,14 @@ private fun NavigationBarNavHost(
             VoiceNoteScreen(onNavigateUp = {
                 navController.navigateUp()
             })
+        }
+        composable(route = Screen.OrcInvoice.route) {
+            OcrInvoiceScreen(
+                onNavigateUp = {
+                    navController.navigateUp()
+                },
+                onNavigateDetails = onNavigateDetails,
+            )
         }
         composable(
             route = "${Screen.WalletDetail.route}/{walletId}",
