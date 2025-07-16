@@ -24,4 +24,8 @@ object SessionManager {
     fun getAccessToken(): String {
         return currentUser?.token.orEmpty()
     }
+
+    fun getRefreshToken(): String {
+        return currentUser?.refreshToken.orEmpty()
+    }
 }

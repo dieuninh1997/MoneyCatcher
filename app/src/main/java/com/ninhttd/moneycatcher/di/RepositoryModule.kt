@@ -5,12 +5,10 @@ import com.ninhttd.moneycatcher.data.remote.AuthInterceptor
 import com.ninhttd.moneycatcher.data.remote.IntentApi
 import com.ninhttd.moneycatcher.data.repository.AuthRepositoryImpl
 import com.ninhttd.moneycatcher.data.repository.CategoryRepositoryImpl
-import com.ninhttd.moneycatcher.data.repository.IntentRepositoryImpl
 import com.ninhttd.moneycatcher.data.repository.TransactionRepositoryImpl
 import com.ninhttd.moneycatcher.data.repository.WalletRepositoryImpl
 import com.ninhttd.moneycatcher.domain.repository.AuthRepository
 import com.ninhttd.moneycatcher.domain.repository.CategoryRepository
-import com.ninhttd.moneycatcher.domain.repository.IntentRepository
 import com.ninhttd.moneycatcher.domain.repository.TransactionRepository
 import com.ninhttd.moneycatcher.domain.repository.WalletRepository
 import dagger.Module
@@ -25,7 +23,6 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -48,18 +45,18 @@ object RepositoryModule {
     }
 
     @Provides
-    fun provideTransactionRepository(postgrest: Postgrest): TransactionRepository {
-        return TransactionRepositoryImpl(postgrest)
+    fun provideTransactionRepository(
+        postgrest: Postgrest,
+        intentApi: IntentApi,
+        auth: Auth,
+        appPrefs: AppPreferencesManager
+    ): TransactionRepository {
+        return TransactionRepositoryImpl(postgrest, intentApi, auth, appPrefs)
     }
 
     @Provides
     fun provideIntentApi(retrofit: Retrofit): IntentApi {
         return retrofit.create(IntentApi::class.java)
-    }
-
-    @Provides
-    fun provideIntentRepository(intentApi: IntentApi): IntentRepository {
-        return IntentRepositoryImpl(intentApi)
     }
 
     @Provides

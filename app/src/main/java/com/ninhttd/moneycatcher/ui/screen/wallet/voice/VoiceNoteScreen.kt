@@ -334,7 +334,9 @@ fun TransactionsResultCard(
                         Spacer(modifier = Modifier.height(8.dp))
 
                         Text(
-                            text = formatDate(transaction.transaction_date), // "Thứ Sáu, 11 tháng 7 2025"
+                            text = formatDate(
+                                transaction.transaction_date ?: ""
+                            ), // "Thứ Sáu, 11 tháng 7 2025"
                             style = MaterialTheme.typography.bodySmall,
                             color = ColorColdPurplePink
                         )
@@ -388,7 +390,9 @@ fun TransactionsResultCard(
                                     userId = userId,
                                     walletId = walletId,
                                     categoryId = categoryData?.id.toString(),
-                                    transactionType = TransactionType.fromId(transaction.transaction_type_id)
+                                    transactionType = TransactionType.fromId(
+                                        transaction.transaction_type_id ?: 0
+                                    )
                                         ?: TransactionType.EXPENSE,
                                     amount = transaction.amount,
                                     note = transaction.note,

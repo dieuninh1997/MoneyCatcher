@@ -133,5 +133,11 @@ dependencies {
 
     //Coil for Uri, URL
     implementation(libs.coil.compose)
+
+    //JetpackLoading
+    implementation("com.ehsanmsz:msz-progress-indicator:0.8.0")
+
+    //camera permission
+    implementation("com.google.accompanist:accompanist-permissions:0.28.0")
 }
 

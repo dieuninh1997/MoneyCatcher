@@ -1,6 +1,11 @@
 package com.ninhttd.moneycatcher.ui.screen.wallet.ocr
 
+import android.Manifest
+import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
+import android.util.Base64
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -18,7 +23,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -37,52 +41,76 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.core.content.FileProvider
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import com.ninhttd.moneycatcher.R
 import com.ninhttd.moneycatcher.common.hiltActivityViewModel
+import com.ninhttd.moneycatcher.data.repository.createCategoryPart
 import com.ninhttd.moneycatcher.domain.model.MessageItem
 import com.ninhttd.moneycatcher.ui.screen.add.component.WalletPickerBottomSheet
 import com.ninhttd.moneycatcher.ui.screen.add.component.WalletPickerRow
 import com.ninhttd.moneycatcher.ui.screen.editcategory.TopBar
 import com.ninhttd.moneycatcher.ui.screen.main.MainSharedViewModel
+import com.ninhttd.moneycatcher.ui.screen.wallet.component.LoadingBubble
 import com.ninhttd.moneycatcher.ui.theme.ColorColdPurplePink
 import com.ninhttd.moneycatcher.ui.theme.ColorPinkPrimary
 import com.ninhttd.moneycatcher.ui.theme.ColorPinkPrimaryContainer
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 
+
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun OcrInvoiceScreen(
     onNavigateUp: () -> Unit,
     onNavigateDetails: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: OcrInvoiceViewModel = hiltViewModel()
 ) {
+    val permissionState = rememberPermissionState(Manifest.permission.CAMERA)
+
     val context = LocalContext.current
+    val uiState = viewModel.uiState
 
     val mainViewModal: MainSharedViewModel = hiltActivityViewModel()
     val walletList by mainViewModal.walletList.collectAsState()
     val currentUser by mainViewModal.currentUser.collectAsState()
     val currentWalletId by mainViewModal.currentWalletId.collectAsState(initial = null)
     val currentWallet by mainViewModal.currentWallet.collectAsState(initial = null)
+    val categoriesList = mainViewModal.categoriesList.collectAsState(initial = listOf()).value
 
     var showBottomSheet by remember { mutableStateOf(false) }
     var recognizedText by remember { mutableStateOf("") }
     var isFileSelectorVisible by remember { mutableStateOf(false) }
-    var selectedImageUri by remember { mutableStateOf<android.net.Uri?>(null) }
+    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+    var cameraImageUri by remember { mutableStateOf<Uri?>(null) }
+    var requestCamera by remember { mutableStateOf(false) }
+
     val noteList = listOf(
         "Đã chi 200.000đ cho việc ăn ngoài từ ví",
         "Đã nhận lương tháng 4 là 15.000.000 VND"
@@ -97,6 +125,45 @@ fun OcrInvoiceScreen(
             messageList.add(MessageItem.ImageMessage(it))
         }
     }
+
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture()
+    ) { success ->
+        if (success) {
+            cameraImageUri?.let {
+                messageList.add(MessageItem.ImageMessage(it))
+                cameraImageUri?.let { uri ->
+                    val categoryList = categoriesList?.map { it -> it.name }
+                    val resizedFile = resizeImage(context, uri)
+                    if (resizedFile != null) {
+                        val imageRequestBody = resizedFile.asRequestBody("image/*".toMediaTypeOrNull())
+                        val filePart =
+                            MultipartBody.Part.createFormData("file", resizedFile.name, imageRequestBody)
+
+                        val categoryListPart = categoryList?.map { category ->
+                            MultipartBody.Part.createFormData("category_list", category)
+                        }
+
+                        val safeCategoryList = categoryListPart ?: emptyList()
+                        viewModel.ocrInvoiceFilePart(
+                            file = filePart,
+                            categoryList = safeCategoryList
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(requestCamera, permissionState.status) {
+        if (requestCamera && permissionState.status.isGranted) {
+            val newUri = createNewImageUri(context)
+            cameraImageUri = newUri
+            cameraLauncher.launch(newUri)
+            requestCamera = false
+        }
+    }
+
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -189,7 +256,17 @@ fun OcrInvoiceScreen(
                         text = { Text("Máy ảnh") },
                         onClick = {
                             isFileSelectorVisible = false
-                            // TODO: onCaptureImage()
+                            if (permissionState.status.isGranted) {
+
+                                val newUri = createNewImageUri(context)
+                                cameraImageUri = newUri
+                                cameraLauncher.launch(newUri)
+
+
+                            } else {
+                                requestCamera = true
+                                permissionState.launchPermissionRequest()
+                            }
                         },
                         leadingIcon = {
                             Icon(
@@ -233,6 +310,21 @@ fun OcrInvoiceScreen(
                 Spacer(Modifier.height(16.dp))
 
                 ChatBubble(messageList)
+
+                when (uiState) {
+                    is OcrInvoiceUiState.Loading -> {
+                        LoadingBubble()
+                    }
+
+                    is OcrInvoiceUiState.Error -> {
+                    }
+
+                    is OcrInvoiceUiState.Success -> {
+                    }
+
+                    OcrInvoiceUiState.Idle -> {
+                    }
+                }
             }
 
             if (showBottomSheet) {
@@ -256,10 +348,9 @@ fun ChatBubble(
 ) {
     LazyColumn(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp),
-        reverseLayout = true, // giống app chat
-        contentPadding = PaddingValues(bottom = 80.dp)
+            .fillMaxWidth(),
+        reverseLayout = true,
+        contentPadding = PaddingValues(bottom = 16.dp)
     ) {
         items(messageList.size) { index ->
             val item = messageList[messageList.lastIndex - index]
@@ -267,7 +358,7 @@ fun ChatBubble(
                 is MessageItem.TextMessage -> {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Start // hoặc End nếu là của người dùng
+                        horizontalArrangement = Arrangement.Start
                     ) {
                         Box(
                             modifier = Modifier
@@ -282,29 +373,38 @@ fun ChatBubble(
 
                 is MessageItem.ImageMessage -> {
                     val context = LocalContext.current
-                    val bitmap = remember(item.uri) {
-                        runCatching {
-                            val stream = context.contentResolver.openInputStream(item.uri)
-                            BitmapFactory.decodeStream(stream)
-                        }.getOrNull()
-                    }
+//                    val bitmap = remember(item.uri) {
+//                        runCatching {
+//                            val stream = context.contentResolver.openInputStream(item.uri)
+//                            BitmapFactory.decodeStream(stream)
+//                        }.getOrNull()
+//                    }
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.End
                     ) {
-                        bitmap?.let {
-                            Image(
-                                bitmap = it.asImageBitmap(),
-                                contentDescription = "Ảnh đã chọn",
-                                modifier = Modifier
-                                    .widthIn(max = 220.dp)
-                                    .heightIn(max = 300.dp)
-                                    .clip(RoundedCornerShape(16.dp))
-                                    .background(Color.LightGray)
-                                    .padding(4.dp),
-                                contentScale = ContentScale.Crop
-                            )
-                        }
+                        Image(
+                            painter = rememberAsyncImagePainter(item.uri),
+                            contentDescription = "Captured image",
+                            modifier = Modifier
+                                .widthIn(max = 220.dp)
+                                .heightIn(max = 300.dp)
+                                .clip(
+                                    RoundedCornerShape(16.dp)
+                                ),
+                            contentScale = ContentScale.Crop
+                        )
+//                        bitmap?.let {
+//                            Image(
+//                                bitmap = it.asImageBitmap(),
+//                                contentDescription = "Ảnh đã chọn",
+//                                modifier = Modifier
+//                                    .widthIn(max = 220.dp)
+//                                    .heightIn(max = 300.dp)
+//                                    .clip(RoundedCornerShape(16.dp)),
+//                                contentScale = ContentScale.Crop
+//                            )
+//                        }
                     }
                 }
             }
@@ -313,4 +413,75 @@ fun ChatBubble(
         }
     }
 
+}
+
+
+fun uriToFile(context: Context, uri: Uri): File {
+    val inputStream = context.contentResolver.openInputStream(uri)
+        ?: throw IllegalArgumentException("Cannot open input stream from URI")
+
+    val tempFile = File.createTempFile("captured_", ".jpg", context.cacheDir)
+    tempFile.outputStream().use { outputStream ->
+        inputStream.copyTo(outputStream)
+    }
+
+    return tempFile
+}
+
+
+fun createNewImageUri(context: Context): Uri {
+    val file =
+        File.createTempFile("camera_image_${System.currentTimeMillis()}", ".jpg", context.cacheDir)
+            .apply {
+                createNewFile()
+                deleteOnExit()
+            }
+    return FileProvider.getUriForFile(
+        context,
+        "${context.packageName}.provider",
+        file
+    )
+}
+
+fun uriToBase64(context: Context, uri: Uri): String? {
+    return try {
+        val inputStream = context.contentResolver.openInputStream(uri)
+        val bytes = inputStream?.readBytes()
+        Base64.encodeToString(bytes, Base64.NO_WRAP)
+    } catch (e: IOException) {
+        e.printStackTrace()
+        null
+    }
+}
+
+fun resizeImage(context: Context, uri: Uri, maxSize: Int = 1024): File? {
+    val inputStream = context.contentResolver.openInputStream(uri)
+    val original = BitmapFactory.decodeStream(inputStream) ?: return null
+
+    val aspectRatio = original.width.toFloat() / original.height.toFloat()
+    val width: Int
+    val height: Int
+
+    if (original.width > original.height) {
+        width = maxSize
+        height = (width / aspectRatio).toInt()
+    } else {
+        height = maxSize
+        width = (height * aspectRatio).toInt()
+    }
+
+    val resizedBitmap = Bitmap.createScaledBitmap(original, width, height, true)
+    val file = File.createTempFile("resized_", ".jpg", context.cacheDir)
+    val outStream = FileOutputStream(file)
+    resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 80, outStream) // 80% chất lượng
+    outStream.close()
+
+    return file
+}
+
+fun bitmapToBase64(bitmap: Bitmap): String {
+    val outputStream = ByteArrayOutputStream()
+    bitmap.compress(Bitmap.CompressFormat.JPEG, 80, outputStream) // 80% chất lượng
+    val bytes = outputStream.toByteArray()
+    return Base64.encodeToString(bytes, Base64.NO_WRAP)
 }

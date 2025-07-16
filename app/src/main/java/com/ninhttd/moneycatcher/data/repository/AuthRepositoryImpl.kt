@@ -85,6 +85,7 @@ fun UserSession.toUserInfo(): UserInfo {
         id = user?.id ?: "",
         email = user?.email ?: "",
         token = accessToken,
+        refreshToken = refreshToken,
         name = fullName
     )
 }
