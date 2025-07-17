@@ -301,120 +301,144 @@ fun TransactionsResultCard(
     modifier: Modifier = Modifier,
     walletIcon: ImageVector = Icons.Default.AccountBalanceWallet,
     onDelete: (ParseIntentResponse) -> Unit = {},
-    onConfirm: (Transaction, Int) -> Unit
+    onConfirm: (Transaction, Int) -> Unit,
 ) {
 
     LazyColumn {
         items(data.size) { index ->
             val transaction = data[index]
-            Card(
-                modifier = modifier
-                    .fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = ColorMutedPinkGray) // dark mode
-            ) {
-                Row(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    val categoryData = categoriesList?.getOrNull(transaction.category_index)
-                    if (categoryData != null) {
-                        Text(text = categoryData.icon, fontSize = 24.sp)
-                        Spacer(Modifier.width(8.dp))
+            TransactionItem(
+                transaction,
+                userId = userId,
+                walletId = walletId,
+                onDelete = onDelete,
+                onConfirm = onConfirm,
+                walletName = walletName,
+                categoriesList = categoriesList,
+                index = index,
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+    }
+}
+
+@Composable
+fun TransactionItem(
+    transaction: ParseIntentResponse,
+    userId: String,
+    walletId: String,
+    onDelete: (ParseIntentResponse) -> Unit,
+    onConfirm: (Transaction, Int) -> Unit,
+    walletName: String,
+    categoriesList: List<Category>?,
+    modifier: Modifier = Modifier,
+    index: Int = 0,
+    walletIcon: ImageVector = Icons.Default.AccountBalanceWallet
+) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = ColorMutedPinkGray) // dark mode
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            val categoryData = categoriesList?.getOrNull(transaction.category_index)
+            if (categoryData != null) {
+                Text(text = categoryData.icon, fontSize = 24.sp)
+                Spacer(Modifier.width(8.dp))
+            }
+
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = transaction.category, // "Foods"
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.weight(1f),
+                    color = Color.White
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = formatDate(
+                        transaction.transaction_date ?: ""
+                    ), // "Thứ Sáu, 11 tháng 7 2025"
+                    style = MaterialTheme.typography.bodySmall,
+                    color = ColorColdPurplePink
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = transaction.note,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = ColorColdPurplePink
+                )
+            }
+
+
+            // Dòng 3: Ví + số tiền + hành động
+            Column(modifier = Modifier.weight(1f)) {
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = walletIcon,
+                        contentDescription = null,
+                        tint = Color(0xFFFF9800)
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(text = walletName, color = ColorColdPurplePink)
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = "${formatMoney(transaction.amount)}đ",
+                    color = Color.Red,
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            if (!transaction.isAdded) {
+                Column {
+                    IconButton(onClick = {
+                        onDelete(transaction)
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Xóa",
+                            tint = Color.Gray
+                        )
                     }
 
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = transaction.category, // "Foods"
-                            style = MaterialTheme.typography.titleMedium,
-                            modifier = Modifier.weight(1f),
-                            color = Color.White
-                        )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Text(
-                            text = formatDate(
-                                transaction.transaction_date ?: ""
-                            ), // "Thứ Sáu, 11 tháng 7 2025"
-                            style = MaterialTheme.typography.bodySmall,
-                            color = ColorColdPurplePink
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-
-                        Text(
-                            text = transaction.note,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = ColorColdPurplePink
-                        )
-                    }
-
-
-                    // Dòng 3: Ví + số tiền + hành động
-                    Column(modifier = Modifier.weight(1f)) {
-
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = walletIcon,
-                                contentDescription = null,
-                                tint = Color(0xFFFF9800)
+                    IconButton(onClick = {
+                        val tx = Transaction(
+                            userId = userId,
+                            walletId = walletId,
+                            categoryId = categoryData?.id.toString(),
+                            transactionType = TransactionType.fromId(
+                                transaction.transaction_type_id ?: 0
                             )
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(text = walletName, color = ColorColdPurplePink)
-                        }
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Text(
-                            text = "${formatMoney(transaction.amount)}đ",
-                            color = Color.Red,
-                            style = MaterialTheme.typography.titleMedium
+                                ?: TransactionType.EXPENSE,
+                            amount = transaction.amount,
+                            note = transaction.note,
+                            transactionDate = LocalDate.parse(
+                                transaction.transaction_date,
+                                DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")
+                            ),
                         )
-                    }
-
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    if (!transaction.isAdded) {
-                        Column {
-                            IconButton(onClick = {
-                                onDelete(transaction)
-                            }) {
-                                Icon(
-                                    imageVector = Icons.Default.Close,
-                                    contentDescription = "Xóa",
-                                    tint = Color.Gray
-                                )
-                            }
-
-                            IconButton(onClick = {
-                                val tx = Transaction(
-                                    userId = userId,
-                                    walletId = walletId,
-                                    categoryId = categoryData?.id.toString(),
-                                    transactionType = TransactionType.fromId(
-                                        transaction.transaction_type_id ?: 0
-                                    )
-                                        ?: TransactionType.EXPENSE,
-                                    amount = transaction.amount,
-                                    note = transaction.note,
-                                    transactionDate = LocalDate.parse(
-                                        transaction.transaction_date,
-                                        DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")
-                                    ),
-                                )
-                                onConfirm(tx, index)
-                            }) {
-                                Icon(
-                                    imageVector = Icons.Default.Check,
-                                    contentDescription = "Xác nhận",
-                                    tint = Color.Cyan
-                                )
-                            }
-                        }
+                        onConfirm(tx, index)
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = "Xác nhận",
+                            tint = Color.Cyan
+                        )
                     }
                 }
             }
-
-            Spacer(modifier = Modifier.height(8.dp))
         }
     }
 }

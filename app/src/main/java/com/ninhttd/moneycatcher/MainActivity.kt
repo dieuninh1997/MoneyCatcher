@@ -75,13 +75,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-
-    override fun onNewIntent(intent: Intent?) {
-        super.onNewIntent(intent)
-
-        val uri = intent?.data ?: return
-    }
-
     fun testDNS() {
         CoroutineScope(Dispatchers.IO).launch {
             try {

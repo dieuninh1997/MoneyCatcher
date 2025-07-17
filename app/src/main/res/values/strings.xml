@@ -17,4 +17,5 @@
     <string name="say_somthing_vv">Nói gì đó để ứng dụng ghi lại giao dịch của bạn</string>
     <string name="example">Ví dụ: Hôm nay tôi đi siêu thị và tiêu một trăm nghìn</string>
     <string name="ocr_title">Ghi nhận Thu nhập và Chi tiêu</string>
+    <string name="warning_message">Thông tin bạn nhập hơi mơ hồ, vui lòng nhập thông tin chi tiết hơn</string>
 </resources>

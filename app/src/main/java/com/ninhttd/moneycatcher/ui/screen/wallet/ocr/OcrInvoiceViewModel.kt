@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ninhttd.moneycatcher.data.model.ParseIntentResponse
+import com.ninhttd.moneycatcher.data.model.isValid
 import com.ninhttd.moneycatcher.domain.usecase.OcrInvoiceUsecase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,7 +37,11 @@ class OcrInvoiceViewModel @Inject constructor(
             ocrInvoiceUsecase(imageBase64, categoryList)
                 .onSuccess { response ->
                     _intentResult.value = response
-                    uiState = OcrInvoiceUiState.Success(response)
+                    if (response.isValid()) {
+                        uiState = OcrInvoiceUiState.Success(response)
+                    } else {
+                        uiState = OcrInvoiceUiState.Error("Not found")
+                    }
                 }
                 .onFailure { error ->
                     uiState = OcrInvoiceUiState.Error(error.message.toString())
@@ -59,7 +64,11 @@ class OcrInvoiceViewModel @Inject constructor(
             ocrInvoiceUsecase(file, categoryList)
                 .onSuccess { response ->
                     _intentResult.value = response
-                    uiState = OcrInvoiceUiState.Success(response)
+                    if (response.isValid()) {
+                        uiState = OcrInvoiceUiState.Success(response)
+                    } else {
+                        uiState = OcrInvoiceUiState.Error("Not found")
+                    }
                 }
                 .onFailure { error ->
                     uiState = OcrInvoiceUiState.Error(error.message.toString())

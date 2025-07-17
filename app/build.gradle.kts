@@ -138,6 +138,6 @@ dependencies {
     implementation("com.ehsanmsz:msz-progress-indicator:0.8.0")
 
     //camera permission
-    implementation("com.google.accompanist:accompanist-permissions:0.28.0")
+    implementation("com.google.accompanist:accompanist-permissions:0.37.3")
 }
 
