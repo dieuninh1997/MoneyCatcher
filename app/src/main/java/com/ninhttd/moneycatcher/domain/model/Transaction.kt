@@ -18,7 +18,7 @@ data class Transaction(
 data class TransactionUiModel(
     val id: String,
     val userId: String,
-    val walletId: String,
+    val wallet: Wallet,
     val category: Category,
     val transactionType: TransactionType,
     val amount: Long,

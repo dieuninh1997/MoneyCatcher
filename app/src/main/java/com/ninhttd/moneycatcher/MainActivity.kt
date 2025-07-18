@@ -51,7 +51,7 @@ class MainActivity : ComponentActivity() {
             LaunchedEffect(isUserLoggedIn) {
                 if (isUserLoggedIn != null) {
                     navController.navigate(
-                        if (isUserLoggedIn) Screen.NavigationBar.route else Screen.Login.route
+                        if (isUserLoggedIn) "main_tabs" else Screen.Login.route
                     ) {
                         popUpTo(0) // clear backstack
                     }
