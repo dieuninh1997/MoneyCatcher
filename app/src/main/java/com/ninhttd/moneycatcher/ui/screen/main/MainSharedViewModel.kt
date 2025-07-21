@@ -33,7 +33,7 @@ class MainSharedViewModel @Inject constructor(
     private val appPrefs: AppPreferencesManager,
     private val walletRepository: WalletRepository,
     private val categoryRepository: CategoryRepository,
-    private val transactionRepository: TransactionRepository
+    private val transactionRepository: TransactionRepository,
 ) : ViewModel() {
     private val _categoriesList = MutableStateFlow<List<Category>?>(listOf())
     val categoriesList: Flow<List<Category>?> = _categoriesList
@@ -58,6 +58,9 @@ class MainSharedViewModel @Inject constructor(
     }
 
     init {
+        viewModelScope.launch {
+            _currentWalletId.value = appPrefs.getCurrentWalletId()
+        }
         getCategoriesList()
         getWalletList()
         _currentUser.value = SessionManager.currentUser
@@ -68,7 +71,10 @@ class MainSharedViewModel @Inject constructor(
     }
 
     fun setCurrentWalletId(id: String) {
-        _currentWalletId.value = id
+        viewModelScope.launch {
+            appPrefs.setCurrentWalletId(id)
+            _currentWalletId.value = id
+        }
     }
 
     fun getWalletList() {

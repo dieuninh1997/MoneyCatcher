@@ -7,30 +7,41 @@ import com.ninhttd.moneycatcher.common.TimeFilter
 import com.ninhttd.moneycatcher.common.TransactionType
 import com.ninhttd.moneycatcher.data.model.CategoryDto
 import com.ninhttd.moneycatcher.data.model.WalletDto
+import com.ninhttd.moneycatcher.di.AppPreferencesManager
 import com.ninhttd.moneycatcher.domain.model.Category
 import com.ninhttd.moneycatcher.domain.model.CategorySummary
+import com.ninhttd.moneycatcher.domain.model.MonthlySummary
 import com.ninhttd.moneycatcher.domain.model.TransactionUiModel
 import com.ninhttd.moneycatcher.domain.model.Wallet
 import com.ninhttd.moneycatcher.domain.repository.CategoryRepository
 import com.ninhttd.moneycatcher.domain.repository.TransactionRepository
 import com.ninhttd.moneycatcher.domain.repository.WalletRepository
+import com.ninhttd.moneycatcher.ui.screen.main.MainSharedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.YearMonth
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val categoryRepository: CategoryRepository,
     private val transactionRepository: TransactionRepository,
-    private val walletRepository: WalletRepository
+    private val walletRepository: WalletRepository,
+    private val appPrefs: AppPreferencesManager
 ) : ViewModel() {
+    private var lastFetchedWalletId: String? = null
+
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState = _uiState.asStateFlow()
 
@@ -42,8 +53,12 @@ class HomeViewModel @Inject constructor(
     val groupTransactionsUiFlow: StateFlow<List<Pair<LocalDate, List<TransactionUiModel>>>> =
         _groupTransactionsUiFlow
 
+    private val _monthlySummaries = MutableStateFlow<List<MonthlySummary>>(emptyList())
+    val monthlySummaries: StateFlow<List<MonthlySummary>> = _monthlySummaries
+
     private val _timeFilter = MutableStateFlow(TimeFilter.MONTHLY)
     val timeFilter: StateFlow<TimeFilter> = _timeFilter
+
 
     private val _selectedTransactionType =
         MutableStateFlow<TransactionType?>(TransactionType.EXPENSE) // mac dinh chi tieu
@@ -93,20 +108,25 @@ class HomeViewModel @Inject constructor(
     init {
         Log.d("HomeViewModel", "🔥 CREATED")
         initialiseUiState()
-        fetchTransactionsWithCategory()
+        viewModelScope.launch {
+            val currentWalletId = appPrefs.getCurrentWalletId()
+            if (currentWalletId.isNullOrBlank()) return@launch
+            fetchTransactionsWithCategory(currentWalletId)
+        }
     }
 
     private fun initialiseUiState() {
         //TODO
     }
 
-    fun fetchTransactionsWithCategory() {
-        if (_transactionsUiFlow.value.isNotEmpty()
-            || _groupTransactionsUiFlow.value.isNotEmpty()
-        ) {
-            return
-        }
+    fun fetchTransactionsWithCategory(walletId: String) {
+        _uiState.value = uiState.value.copy(isLoading = true)
+        if (walletId == lastFetchedWalletId) return // cùng ví → bỏ qua
+
+        lastFetchedWalletId = walletId // cập nhật ví mới
+
         viewModelScope.launch {
+
             val txDtos = transactionRepository.getTransactions() ?: emptyList()
             val catDtos = categoryRepository.getCategories() ?: emptyList()
             val walletDtos = walletRepository.getWallets() ?: emptyList()
@@ -115,11 +135,14 @@ class HomeViewModel @Inject constructor(
             val categoryMap = categories.associateBy { it.id }
 
             val uiList = txDtos.mapNotNull { tx ->
+                if (tx.wallet_id.trim() != walletId) return@mapNotNull null
+
                 val category = categoryMap[tx.category_id.trim()]
                 category?.let { ct ->
                     val wallets = walletDtos.map { it.asDomainModel() }
                     val walletMap = wallets.associateBy { it.id }
                     val wallet = walletMap[tx.wallet_id.trim()]
+
                     wallet?.let { w ->
                         TransactionUiModel(
                             id = tx.id,
@@ -144,7 +167,32 @@ class HomeViewModel @Inject constructor(
 
             _transactionsUiFlow.value = uiList
             _groupTransactionsUiFlow.value = grouped
+
+            val summaries = calculateMonthlySummaries(uiList)
+            _monthlySummaries.value = summaries
+            _uiState.value = uiState.value.copy(isLoading = false)
         }
+    }
+
+    fun calculateMonthlySummaries(transactions: List<TransactionUiModel>): List<MonthlySummary> {
+        return transactions
+            .groupBy { YearMonth.from(it.transactionDate) } // gom theo tháng
+            .map { (month, txList) ->
+                val income = txList
+                    .filter { it.transactionType == TransactionType.INCOME }
+                    .sumOf { it.amount }
+
+                val expense = txList
+                    .filter { it.transactionType == TransactionType.EXPENSE }
+                    .sumOf { it.amount }
+
+                MonthlySummary(
+                    month = month,
+                    income = income,
+                    expense = expense
+                )
+            }
+            .sortedBy { it.month } // tăng dần theo thời gian, nếu muốn mới nhất đầu thì .sortedByDescending
     }
 
     private fun CategoryDto.asDomainModel(): Category {

@@ -5,6 +5,13 @@ import com.ninhttd.moneycatcher.domain.model.UserInfo
 
 object SessionManager {
     var currentUser: UserInfo? = null
+    private var _currentWalletId: String? = null
+
+    fun setCurrentWalletId(id: String) {
+        _currentWalletId = id
+    }
+
+    fun getCurrentWalletId(): String? = _currentWalletId
 
     suspend fun loadFromPrefs(appPrefs: AppPreferencesManager) {
         currentUser = appPrefs.getUser()

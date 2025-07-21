@@ -11,15 +11,18 @@ import androidx.compose.material.icons.filled.PieChart
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.ninhttd.moneycatcher.ui.theme.ColorMutedPinkGray
 import com.ninhttd.moneycatcher.ui.theme.ColorSurfaceDark
 import com.ninhttd.moneycatcher.ui.theme.ColorZeroWhite
+import timber.log.Timber
 
 @Composable
 fun BottomBarWithFab(navController: NavHostController, modifier: Modifier = Modifier) {
@@ -47,7 +50,9 @@ fun BottomBarWithFab(navController: NavHostController, modifier: Modifier = Modi
     )
 
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
-
+    LaunchedEffect(currentRoute) {
+        Timber.tag("Nav").d("Current route: $currentRoute")
+    }
     BottomAppBar(
         containerColor = ColorSurfaceDark,
         contentColor = ColorMutedPinkGray,
@@ -61,7 +66,7 @@ fun BottomBarWithFab(navController: NavHostController, modifier: Modifier = Modi
                     selected = currentRoute == item.route,
                     onClick = {
                         navController.navigate(item.route) {
-                            popUpTo("main_tabs") {
+                            popUpTo(navController.graph.findStartDestination().id) {
                                 saveState = true
                             }
                             launchSingleTop = true

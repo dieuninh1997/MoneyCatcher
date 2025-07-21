@@ -76,7 +76,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     //core
-    implementation (libs.androidx.core.splashscreen)
+    implementation(libs.androidx.core.splashscreen)
 
     // Retrofit
     implementation(libs.retrofit.v290)
@@ -95,7 +95,7 @@ dependencies {
     implementation(libs.material3)
     implementation(libs.androidx.material)
     implementation(libs.androidx.lifecycle.runtime.compose)
-    implementation (libs.accompanist.systemuicontroller)
+    implementation(libs.accompanist.systemuicontroller)
     implementation(libs.androidx.navigation.compose)
     lintChecks(libs.compose.lint.checks)
     implementation(libs.androidx.material.icons.extended)
@@ -103,17 +103,17 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
     ksp(libs.androidx.hilt.compiler)
-    implementation (libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.hilt.navigation.compose)
 
     // timber
-    implementation (libs.timber)
+    implementation(libs.timber)
 
     // Immutable collections
     implementation(libs.kotlinx.collections.immutable)
 
     //accompanist pager
-    implementation (libs.accompanist.pager)
-    implementation (libs.accompanist.pager.indicators)
+    implementation(libs.accompanist.pager)
+    implementation(libs.accompanist.pager.indicators)
 
     // Supabase Integration - using the latest BOM version for Supabase libraries
     implementation(platform("io.github.jan-tennert.supabase:bom:3.1.3"))
@@ -139,5 +139,8 @@ dependencies {
 
     //camera permission
     implementation("com.google.accompanist:accompanist-permissions:0.37.3")
+
+    //chart
+    implementation ("io.github.ehsannarmani:compose-charts:0.1.7")
 }
 

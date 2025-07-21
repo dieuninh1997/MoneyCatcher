@@ -18,4 +18,6 @@
     <string name="example">Ví dụ: Hôm nay tôi đi siêu thị và tiêu một trăm nghìn</string>
     <string name="ocr_title">Ghi nhận Thu nhập và Chi tiêu</string>
     <string name="warning_message">Thông tin bạn nhập hơi mơ hồ, vui lòng nhập thông tin chi tiết hơn</string>
+    <string name="calendar">Lịch</string>
+    <string name="month">Tháng</string>
 </resources>

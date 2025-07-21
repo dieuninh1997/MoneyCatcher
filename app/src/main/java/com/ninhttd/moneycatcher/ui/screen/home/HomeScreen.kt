@@ -41,11 +41,9 @@ import com.ninhttd.moneycatcher.common.hiltActivityViewModel
 import com.ninhttd.moneycatcher.domain.model.CategorySummary
 import com.ninhttd.moneycatcher.domain.model.TransactionUiModel
 import com.ninhttd.moneycatcher.domain.model.Wallet
-import com.ninhttd.moneycatcher.navigation.NavigationBarScreen
 import com.ninhttd.moneycatcher.navigation.Screen
 import com.ninhttd.moneycatcher.ui.screen.add.component.formatMoney
 import com.ninhttd.moneycatcher.ui.screen.home.component.BalanceHeader
-import com.ninhttd.moneycatcher.ui.screen.home.component.Chart
 import com.ninhttd.moneycatcher.ui.screen.home.component.RecentTransactionItem
 import com.ninhttd.moneycatcher.ui.screen.home.component.TopSpendingSection
 import com.ninhttd.moneycatcher.ui.screen.main.MainSharedViewModel
@@ -56,8 +54,9 @@ import java.time.format.DateTimeFormatter
 
 @Composable
 fun HomeScreen(
+    onNavigateToCalendar: () -> Unit,
+    onNavigateToReport: () -> Unit,
     onNavigateDetails: (String) -> Unit,
-    onNavigateSettings: () -> Unit,
     viewModel: HomeViewModel
 ) {
     val mainViewModal: MainSharedViewModel = hiltActivityViewModel()
@@ -89,6 +88,8 @@ fun HomeScreen(
         groupTransactions = groupedTransactions,
         timeFilter = timeFilter,
         currentWallet = currentWallet,
+        onNavigateToCalendar = onNavigateToCalendar,
+        onNavigateToReport = onNavigateToReport,
         onNavigateDetails = onNavigateDetails,
         onRefresh = {
         },
@@ -107,6 +108,8 @@ fun HomeScreen(
     groupTransactions: List<Pair<LocalDate, List<TransactionUiModel>>>,
     timeFilter: TimeFilter,
     currentWallet: Wallet?,
+    onNavigateToCalendar: () -> Unit,
+    onNavigateToReport: () -> Unit,
     onNavigateDetails: (String) -> Unit,
     onRefresh: () -> Unit,
     onDismissError: (Int) -> Unit,
@@ -151,9 +154,9 @@ fun HomeScreen(
                             onNavigateDetails(Screen.Search.route)
                         })
                 }
-                item {
-                    Chart(onViewAllClick = {})
-                }
+//                item {
+//                    Chart(onViewAllClick = {})
+//                }
 
                 item {
                     when (topCategoriesState) {
@@ -168,16 +171,15 @@ fun HomeScreen(
                         }
 
                         is LoadResult.Success<*> -> {
-                            val data=(topCategoriesState as LoadResult.Success<*>).data as List<CategorySummary>
+                            val data =
+                                (topCategoriesState as LoadResult.Success<*>).data as List<CategorySummary>
                             TopSpendingSection(
                                 data,
                                 timeFilter,
                                 onFilterClick = { it ->
                                     viewModel.setTimeFilter(it)
                                 },
-                                onViewAllClick = {
-                                    onNavigateDetails(NavigationBarScreen.Report.route)
-                                }
+                                onViewAllClick = onNavigateToReport
                             )
                         }
                     }
@@ -197,9 +199,7 @@ fun HomeScreen(
                             color = ColorColdPurplePink
                         )
                         Spacer(Modifier.weight(1f))
-                        TextButton(onClick = {
-                            onNavigateDetails(NavigationBarScreen.Calendar.route)
-                        }) {
+                        TextButton(onClick = onNavigateToCalendar) {
                             Text("Xem tất cả", color = ColorColdPurplePink)
                         }
                     }

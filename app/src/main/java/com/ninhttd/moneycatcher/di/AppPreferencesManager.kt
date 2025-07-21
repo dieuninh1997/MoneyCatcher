@@ -13,6 +13,7 @@ import com.ninhttd.moneycatcher.domain.model.Wallet
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
@@ -32,6 +33,7 @@ class AppPreferencesManager @Inject constructor(
     companion object {
         val WALLET_LIST_KEY = stringPreferencesKey("wallet_list")
         val USER_INFO_KEY = stringPreferencesKey("user_info")
+        val CURRENT_WALLET_ID = stringPreferencesKey("current_wallet_id")
     }
 
     val userFlow: Flow<UserInfo?> = dataStore.data.map { prefs ->
@@ -88,4 +90,13 @@ class AppPreferencesManager @Inject constructor(
         }
     }
 
+    suspend fun setCurrentWalletId(id: String) {
+        dataStore.edit { prefs ->
+            prefs[CURRENT_WALLET_ID] = id
+        }
+    }
+
+    suspend fun getCurrentWalletId(): String? {
+        return dataStore.data.map { it[CURRENT_WALLET_ID] }.firstOrNull()
+    }
 }
