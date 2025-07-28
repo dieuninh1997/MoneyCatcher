@@ -84,13 +84,11 @@ fun CalendarScreen(
 
     val homeViewModel: HomeViewModel = hiltActivityViewModel()
     val homeUiState by homeViewModel.uiState.collectAsStateWithLifecycle()
-    val transactionsUiFlow by homeViewModel.transactionsUiFlow.collectAsState()
     val groupedTransactions by homeViewModel.groupTransactionsUiFlow.collectAsState()
     val monthlySummaries by homeViewModel.monthlySummaries.collectAsState()
 
     val mainViewModal: MainSharedViewModel = hiltActivityViewModel()
     val walletList by mainViewModal.walletList.collectAsState()
-    val currentWalletId by mainViewModal.currentWalletId.collectAsState(initial = null)
     val currentWallet by mainViewModal.currentWallet.collectAsState(initial = null)
 
     CalendarScreen(
@@ -130,7 +128,6 @@ fun CalendarScreen(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val scope = rememberCoroutineScope()
     var showBottomSheet by remember { mutableStateOf(false) }
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -194,9 +191,11 @@ fun CalendarScreen(
             ) {
                 HeaderWithSearch(context)
                 WalletPickerRow(
-                    currentWallet, onClick = {
+                    currentWallet,
+                    onClick = {
                         showBottomSheet = true
-                    }, onNavigateDetails = onNavigateDetails
+                    },
+                    onNavigateDetails = onNavigateDetails
                 )
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),

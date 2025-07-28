@@ -37,3 +37,9 @@ fun formatDate(input: String): String {
         input // fallback
     }
 }
+
+enum class PeriodType(val displayName: String) {
+    WEEK("Hàng tuần"),
+    MONTH("Hàng tháng"),
+    YEAR("Hàng năm")
+}
