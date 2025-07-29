@@ -3,6 +3,7 @@ package com.ninhttd.moneycatcher.ui.screen.home
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ninhttd.moneycatcher.common.PeriodType
 import com.ninhttd.moneycatcher.common.TimeFilter
 import com.ninhttd.moneycatcher.common.TransactionType
 import com.ninhttd.moneycatcher.data.model.CategoryDto
@@ -17,6 +18,7 @@ import com.ninhttd.moneycatcher.domain.repository.CategoryRepository
 import com.ninhttd.moneycatcher.domain.repository.TransactionRepository
 import com.ninhttd.moneycatcher.domain.repository.WalletRepository
 import com.ninhttd.moneycatcher.ui.screen.main.MainSharedViewModel
+import com.ninhttd.moneycatcher.ui.screen.report.components.PeriodFilterState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -64,32 +66,35 @@ class HomeViewModel @Inject constructor(
         MutableStateFlow<TransactionType?>(TransactionType.EXPENSE) // mac dinh chi tieu
     val selectedTransactionType: StateFlow<TransactionType?> = _selectedTransactionType
 
-
     fun setTimeFilter(filter: TimeFilter) {
         _timeFilter.value = filter
     }
 
+    fun updatePeriodFilter(newPeriod: PeriodFilterState) {
+        _periodFilterState.value = newPeriod
+    }
+
+    private val _periodFilterState = MutableStateFlow(PeriodFilterState.default())
+    val periodFilterState: StateFlow<PeriodFilterState> = _periodFilterState.asStateFlow()
+
     val topSpendingCategories: StateFlow<LoadResult<List<CategorySummary>>> = combine(
         transactionsUiFlow,  // All transactions
-        timeFilter, selectedTransactionType
-    ) { transactions, filter, selectedType ->
+        periodFilterState,
+        selectedTransactionType
+    ) { transactions, period, selectedType ->
 
         val now = LocalDate.now()
 
         // Lọc theo thời gian
         val filtered = transactions.filter { tx ->
             val date = tx.transactionDate
-            val inTime = when (filter) {
-                TimeFilter.WEEKLY -> date.isAfter(now.minusWeeks(1))
-                TimeFilter.MONTHLY -> date.month == now.month && date.year == now.year
-                TimeFilter.YEARLY -> date.year == now.year
-            }
+            val inRange = !date.isBefore(period.startDate) && !date.isAfter(period.endDate)
             val matchType = when (selectedType) {
                 TransactionType.INCOME -> tx.transactionType.id == 1
                 TransactionType.EXPENSE -> tx.transactionType.id == 2
                 else -> true // Nếu không chọn, lấy cả hai
             }
-            inTime && matchType
+            inRange && matchType
         }
 
         val total = filtered.sumOf { it.amount }

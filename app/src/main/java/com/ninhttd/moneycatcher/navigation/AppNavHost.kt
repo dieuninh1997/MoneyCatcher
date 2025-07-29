@@ -177,10 +177,20 @@ fun AppNavHost(
                 // report tab
                 composable(NavigationBarScreen.Report.route) {
                     ReportScreen(
-                        onNavigateDetails = { route ->
-                            navController.navigate(route)
+                        onNavigateDetails = { screenName ->
+                            navController.navigate(screenName)
                         },
-                        onNavigateSettings = {})
+                        onNavigateSettings = {},
+                        onNavigateToAdd = {
+                            navController.navigate(NavigationBarScreen.Add.route) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        },
+                        )
                 }
 
                 //others tab

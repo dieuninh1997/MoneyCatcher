@@ -55,11 +55,9 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.ninhttd.moneycatcher.R
 import com.ninhttd.moneycatcher.common.hiltActivityViewModel
 import com.ninhttd.moneycatcher.domain.model.CategorySummary
-import com.ninhttd.moneycatcher.domain.model.SpendingRecord
 import com.ninhttd.moneycatcher.domain.model.TransactionUiModel
 import com.ninhttd.moneycatcher.domain.model.Wallet
 import com.ninhttd.moneycatcher.navigation.Screen
@@ -68,13 +66,12 @@ import com.ninhttd.moneycatcher.ui.screen.add.component.WalletPickerRow
 import com.ninhttd.moneycatcher.ui.screen.home.HomeUiState
 import com.ninhttd.moneycatcher.ui.screen.home.HomeViewModel
 import com.ninhttd.moneycatcher.ui.screen.home.LoadResult
-import com.ninhttd.moneycatcher.ui.screen.home.component.RecentTransactionItem
 import com.ninhttd.moneycatcher.ui.screen.home.component.TopSpendingItem
 import com.ninhttd.moneycatcher.ui.screen.main.MainSharedViewModel
+import com.ninhttd.moneycatcher.ui.screen.report.components.EmptyReport
 import com.ninhttd.moneycatcher.ui.screen.report.components.LegendItem
 import com.ninhttd.moneycatcher.ui.screen.report.components.PeriodFilterState
 import com.ninhttd.moneycatcher.ui.screen.report.components.PeriodPickerSheet
-import com.ninhttd.moneycatcher.ui.theme.ColorColdPurplePink
 import ir.ehsannarmani.compose_charts.PieChart
 import ir.ehsannarmani.compose_charts.models.Pie
 import java.time.LocalDate
@@ -85,6 +82,7 @@ import java.time.format.DateTimeFormatter
 fun ReportScreen(
     onNavigateDetails: (String) -> Unit,
     onNavigateSettings: () -> Unit,
+    onNavigateToAdd: () -> Unit,
     viewModel: ReportViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -106,6 +104,10 @@ fun ReportScreen(
         groupTransactions = groupedTransactions,
         wallets = walletList,
         currentWallet = currentWallet,
+        onNavigateToAdd = onNavigateToAdd,
+        onUpdateTimeFilterFromPeriod = {
+            homeViewModel.updatePeriodFilter(it)
+        },
         onChangeCurrentWalletId = { id ->
             mainViewModal.setCurrentWalletId(id)
             homeViewModel.fetchTransactionsWithCategory(id)
@@ -128,6 +130,8 @@ fun ReportScreen(
     groupTransactions: List<Pair<LocalDate, List<TransactionUiModel>>>,
     wallets: List<Wallet>,
     currentWallet: Wallet?,
+    onNavigateToAdd: () -> Unit,
+    onUpdateTimeFilterFromPeriod: (PeriodFilterState) -> Unit,
     onChangeCurrentWalletId: (String) -> Unit,
     onNavigateSettings: () -> Unit,
     onNavigateDetails: (String) -> Unit,
@@ -196,7 +200,11 @@ fun ReportScreen(
 
                 PeriodPicker(
                     periodState = periodState,
-                    onPeriodSelected = { periodState = it }
+                    onPeriodSelected = {
+                        periodState = it
+                        onUpdateTimeFilterFromPeriod(it)
+
+                    }
                 )
 
                 when (topCategoriesState) {
@@ -222,6 +230,9 @@ fun ReportScreen(
                                 )
                                 Spacer(Modifier.height(8.dp))
                             }
+                        } else {
+                            Spacer(Modifier.height(36.dp))
+                            EmptyReport(onAddTransactionClick = onNavigateToAdd)
                         }
                     }
                 }
