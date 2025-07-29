@@ -111,15 +111,6 @@ fun PeriodPickerSheet(
                             Button(
                                 onClick = {
                                     selectedType = it
-//                                    selectedValue = when (it) {
-//                                        PeriodType.WEEK -> "Tuần ${
-//                                            LocalDate.now()
-//                                                .get(WeekFields.ISO.weekOfWeekBasedYear())
-//                                        }"
-//
-//                                        PeriodType.MONTH -> "Tháng ${LocalDate.now().monthValue}"
-//                                        PeriodType.YEAR -> "${LocalDate.now().year}"
-//                                    }
                                 },
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = if (isSelected) ColorPinkPrimaryContainer else Color.LightGray

@@ -17,6 +17,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.ninhttd.moneycatcher.ui.theme.ColorColdPurplePink
 
 @Composable
 fun LegendItem(color: Color, text: String, modifier: Modifier = Modifier) {
@@ -35,7 +36,7 @@ fun LegendItem(color: Color, text: String, modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.width(8.dp))
         Text(
             text = text,
-            color = Color.White,
+            color = ColorColdPurplePink,
             fontSize = 14.sp
         )
     }

@@ -5,13 +5,17 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
@@ -34,6 +38,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -50,21 +55,26 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import com.ninhttd.moneycatcher.R
 import com.ninhttd.moneycatcher.common.hiltActivityViewModel
 import com.ninhttd.moneycatcher.domain.model.CategorySummary
+import com.ninhttd.moneycatcher.domain.model.SpendingRecord
 import com.ninhttd.moneycatcher.domain.model.TransactionUiModel
 import com.ninhttd.moneycatcher.domain.model.Wallet
+import com.ninhttd.moneycatcher.navigation.Screen
 import com.ninhttd.moneycatcher.ui.screen.add.component.WalletPickerBottomSheet
 import com.ninhttd.moneycatcher.ui.screen.add.component.WalletPickerRow
 import com.ninhttd.moneycatcher.ui.screen.home.HomeUiState
 import com.ninhttd.moneycatcher.ui.screen.home.HomeViewModel
 import com.ninhttd.moneycatcher.ui.screen.home.LoadResult
+import com.ninhttd.moneycatcher.ui.screen.home.component.RecentTransactionItem
 import com.ninhttd.moneycatcher.ui.screen.home.component.TopSpendingItem
 import com.ninhttd.moneycatcher.ui.screen.main.MainSharedViewModel
 import com.ninhttd.moneycatcher.ui.screen.report.components.LegendItem
 import com.ninhttd.moneycatcher.ui.screen.report.components.PeriodFilterState
 import com.ninhttd.moneycatcher.ui.screen.report.components.PeriodPickerSheet
+import com.ninhttd.moneycatcher.ui.theme.ColorColdPurplePink
 import ir.ehsannarmani.compose_charts.PieChart
 import ir.ehsannarmani.compose_charts.models.Pie
 import java.time.LocalDate
@@ -174,7 +184,7 @@ fun ReportScreen(
                     .verticalScroll(rememberScrollState())
                     .padding(16.dp),
             ) {
-                HeaderWithSearchAndExport(context)
+                HeaderWithSearchAndExport(context, onNavigateDetails)
                 WalletPickerRow(
                     currentWallet,
                     onClick = {
@@ -242,14 +252,18 @@ fun SpendingPieChart(topCategories: List<CategorySummary>, modifier: Modifier = 
         Color(0xFFFF0056),
         Color(0xFF1AD0D5),
     )
-    val topCategoriesMap = topCategories.mapIndexed { index, item ->
-        Pie(
-            data = item.amount.toDouble(),
-            color = colors[index],
-            label = item.category.name
-        )
+
+    var data by remember { mutableStateOf(emptyList<Pie>()) }
+
+    LaunchedEffect(topCategories) {
+        data = topCategories.mapIndexed { index, item ->
+            Pie(
+                data = item.amount.toDouble(),
+                color = colors[index],
+                label = item.category.name
+            )
+        }
     }
-    var data by remember { mutableStateOf(topCategoriesMap) }
 
     Column(
         modifier = Modifier
@@ -283,11 +297,20 @@ fun SpendingPieChart(topCategories: List<CategorySummary>, modifier: Modifier = 
         }
         Spacer(modifier = Modifier.height(16.dp))
         // Chú thích
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(3),
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(max = 200.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(16.dp)
         ) {
-            LegendItem(color = Color(0xFFF48FB1), text = "Điều chỉnh")
-            LegendItem(color = Color(0xFFCDDC39), text = "Ăn uống")
+            items(topCategories.size) { index ->
+                val item = topCategories[index]
+                LegendItem(color = colors[index], text = item.category.name)
+            }
         }
     }
 }
@@ -334,7 +357,11 @@ fun PeriodPicker(
 
 
 @Composable
-fun HeaderWithSearchAndExport(context: Context, modifier: Modifier = Modifier) {
+fun HeaderWithSearchAndExport(
+    context: Context,
+    onNavigateDetails: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -358,7 +385,9 @@ fun HeaderWithSearchAndExport(context: Context, modifier: Modifier = Modifier) {
                 )
             }
 
-            IconButton(onClick = { /* TODO: open search */ }) {
+            IconButton(onClick = {
+                onNavigateDetails(Screen.Export.route)
+            }) {
                 Icon(
                     imageVector = Icons.Default.Share,
                     contentDescription = "Export/Share",

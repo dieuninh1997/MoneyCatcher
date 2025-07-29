@@ -14,6 +14,7 @@ sealed class Screen(val route: String) {
     data object AddWallet: Screen("add_wallet_screen")
     data object WalletDetail: Screen("wallet_detail_screen")
     data object Search: Screen("search_screen")
+    data object Export: Screen("export_screen")
     data object NavigationBar: Screen("navigation_bar_screen")
 }
 

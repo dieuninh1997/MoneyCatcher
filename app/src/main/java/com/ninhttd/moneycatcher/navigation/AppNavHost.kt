@@ -39,6 +39,7 @@ import com.ninhttd.moneycatcher.ui.screen.add.ReportScreen
 import com.ninhttd.moneycatcher.ui.screen.add.component.AddNewScreen
 import com.ninhttd.moneycatcher.ui.screen.calendar.CalendarScreen
 import com.ninhttd.moneycatcher.ui.screen.editcategory.EditCategoryScreen
+import com.ninhttd.moneycatcher.ui.screen.export.ExportScreen
 import com.ninhttd.moneycatcher.ui.screen.home.HomeScreen
 import com.ninhttd.moneycatcher.ui.screen.home.HomeViewModel
 import com.ninhttd.moneycatcher.ui.screen.login.LoginScreen
@@ -175,7 +176,11 @@ fun AppNavHost(
 
                 // report tab
                 composable(NavigationBarScreen.Report.route) {
-                    ReportScreen(onNavigateDetails = {}, onNavigateSettings = {})
+                    ReportScreen(
+                        onNavigateDetails = { route ->
+                            navController.navigate(route)
+                        },
+                        onNavigateSettings = {})
                 }
 
                 //others tab
@@ -186,7 +191,12 @@ fun AppNavHost(
             }
 
             //Other single-screen routes
-
+            composable(route = Screen.Export.route) {
+                ExportScreen(
+                    navController = navController,
+                    onNavigateUp = { navController.navigateUp() },
+                )
+            }
             composable(route = Screen.EditCategory.route) {
                 EditCategoryScreen(
                     onNavigateUp = { navController.navigateUp() },
