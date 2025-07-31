@@ -9,6 +9,7 @@ import com.ninhttd.moneycatcher.di.AppPreferencesManager
 import com.ninhttd.moneycatcher.di.SessionManager
 import com.ninhttd.moneycatcher.domain.model.UserInfo
 import com.ninhttd.moneycatcher.domain.usecase.LoginUseCase
+import com.ninhttd.moneycatcher.domain.usecase.LogoutUsecase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,10 +19,14 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
+    private val logoutUseCase: LogoutUsecase,
     private val appPrefs: AppPreferencesManager
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Idle)
     val uiState: StateFlow<LoginUiState> = _uiState
+
+    private val _logoutState = MutableStateFlow<LogoutUiState>(LogoutUiState.Idle)
+    val logoutState: StateFlow<LogoutUiState> = _logoutState
 
     var userState by mutableStateOf<UserInfo?>(null)
 
@@ -56,5 +61,17 @@ class LoginViewModel @Inject constructor(
         }
     }
 
+    fun logout() {
+        viewModelScope.launch {
+            _logoutState.value = LogoutUiState.Loading
+            val result = logoutUseCase()
+            _logoutState.value = if (result.isSuccess) {
+                SessionManager.logout(appPrefs)
+                LogoutUiState.Success
+            } else {
+                LogoutUiState.Error(result.exceptionOrNull()?.message ?: "Unknown error")
+            }
+        }
+    }
 
 }

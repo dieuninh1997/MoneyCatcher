@@ -23,6 +23,7 @@ fun SettingsGroup(title: String, items: List<SettingItem>, modifier: Modifier = 
         Spacer(Modifier.height(8.dp))
         items.forEach {
             SettingRow(it)
+            Spacer(Modifier.height(8.dp))
         }
     }
 }

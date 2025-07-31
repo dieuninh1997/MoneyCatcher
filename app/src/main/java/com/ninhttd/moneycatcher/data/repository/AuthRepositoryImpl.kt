@@ -23,6 +23,15 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun logout(): Result<Unit> {
+        return try {
+            auth.signOut() // trả về Unit
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
 
     private suspend fun loginOrSignUp(email: String, password: String): UserInfo? {
         return try {

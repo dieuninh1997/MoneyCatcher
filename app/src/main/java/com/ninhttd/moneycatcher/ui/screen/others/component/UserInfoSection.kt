@@ -17,14 +17,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.ninhttd.moneycatcher.domain.model.UserInfo
 import com.ninhttd.moneycatcher.ui.theme.ColorColdPurplePink
 
 @Composable
-fun UserInfoSection(modifier: Modifier = Modifier) {
+fun UserInfoSection(currentUser: UserInfo, modifier: Modifier = Modifier) {
     Row(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
+            .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
@@ -35,8 +35,8 @@ fun UserInfoSection(modifier: Modifier = Modifier) {
         )
         Spacer(Modifier.width(12.dp))
         Column {
-            Text("Ninh Trần Thị Diệu", color = ColorColdPurplePink, fontWeight = FontWeight.Bold)
-            Text("ttdn1997@gmail.com", color = Color.Gray)
+            Text(currentUser.name, color = ColorColdPurplePink, fontWeight = FontWeight.Bold)
+            Text(currentUser.email, color = Color.Gray)
         }
     }
 }

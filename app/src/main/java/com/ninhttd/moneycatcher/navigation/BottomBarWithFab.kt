@@ -66,6 +66,7 @@ fun BottomBarWithFab(navController: NavHostController, modifier: Modifier = Modi
                     selected = currentRoute == item.route,
                     onClick = {
                         navController.navigate(item.route) {
+                            // Ensure we navigate within the main_tabs scope
                             popUpTo(navController.graph.findStartDestination().id) {
                                 saveState = true
                             }

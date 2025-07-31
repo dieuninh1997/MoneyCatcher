@@ -29,6 +29,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
@@ -78,18 +79,28 @@ fun AppNavHost(
     }
 
     val startDestination = if (isLoggedIn) "main_tabs"
-    //Screen.NavigationBar.route
     else
         Screen.Login.route
 
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    val isBottomBarVisible = currentRoute in listOf(
+        NavigationBarScreen.Home.route,
+        NavigationBarScreen.Calendar.route,
+        NavigationBarScreen.Add.route,
+        NavigationBarScreen.Report.route,
+        NavigationBarScreen.Others.route
+    )
+
     Scaffold(
         bottomBar = {
-            if (startDestination == "main_tabs") {
+            if (isBottomBarVisible) {
                 BottomBarWithFab(navController)
             }
         },
         floatingActionButton = {
-            if (startDestination == "main_tabs") {
+            if (isBottomBarVisible) {
                 FloatingActionButton(
                     onClick = {
                         navController.navigate(NavigationBarScreen.Add.route) {
@@ -115,11 +126,11 @@ fun AppNavHost(
             startDestination = startDestination,
             modifier = Modifier.padding(paddingValues)
         ) {
-            composable("login") {
+            composable(Screen.Login.route) {
                 LoginScreen(
                     onNavigate = {
                         navController.navigate("main_tabs") {
-                            popUpTo("login") { inclusive = true }
+                            popUpTo(Screen.Login.route) { inclusive = true }
                         }
                     }
                 )
@@ -163,7 +174,11 @@ fun AppNavHost(
 
                 //Calendar tab
                 composable(NavigationBarScreen.Calendar.route) {
-                    CalendarScreen(onNavigateDetails = {}, onNavigateSettings = {})
+                    CalendarScreen(
+                        onNavigateDetails = { route ->
+                            navController.navigate(route)
+                        },
+                        onNavigateSettings = {})
                 }
 
                 //Add tab
@@ -171,7 +186,9 @@ fun AppNavHost(
                     AddNewScreen(
                         onNavigateNote = {},
                         onNavigateEditCategory = {},
-                        onNavigateDetails = {})
+                        onNavigateDetails = { route ->
+                            navController.navigate(route)
+                        })
                 }
 
                 // report tab
@@ -190,12 +207,20 @@ fun AppNavHost(
                                 restoreState = true
                             }
                         },
-                        )
+                    )
                 }
 
                 //others tab
                 composable(NavigationBarScreen.Others.route) {
-                    OthersScreen(onNavigateDetails = {})
+                    OthersScreen(
+                        onNavigateToLogin = {
+                            navController.navigate(Screen.Login.route) {
+                                popUpTo("main_tabs") { inclusive = true }
+                            }
+                        },
+                        onNavigateDetails = { route ->
+                            navController.navigate(route)
+                        })
                 }
 
             }
@@ -210,13 +235,17 @@ fun AppNavHost(
             composable(route = Screen.EditCategory.route) {
                 EditCategoryScreen(
                     onNavigateUp = { navController.navigateUp() },
-                    onNavigateDetails = {}
+                    onNavigateDetails = { route ->
+                        navController.navigate(route)
+                    }
                 )
             }
             composable(route = Screen.Wallet.route) {
                 WalletScreen(
                     onNavigateUp = { navController.navigateUp() },
-                    onNavigateDetails = {}
+                    onNavigateDetails = { route ->
+                        navController.navigate(route)
+                    }
                 )
             }
             composable(route = Screen.AddWallet.route) {
@@ -239,7 +268,9 @@ fun AppNavHost(
                     onNavigateUp = {
                         navController.navigateUp()
                     },
-                    onNavigateDetails = {},
+                    onNavigateDetails = { route ->
+                        navController.navigate(route)
+                    }
                 )
             }
             composable(
@@ -252,7 +283,7 @@ fun AppNavHost(
                 val walletId = backStackEntry.arguments?.getString("walletId")
                 WalletDetailScreen(
                     onNavigateDetails = { route ->
-
+                        navController.navigate(route)
                     },
                     onNavigateUp = {
                         navController.navigateUp()

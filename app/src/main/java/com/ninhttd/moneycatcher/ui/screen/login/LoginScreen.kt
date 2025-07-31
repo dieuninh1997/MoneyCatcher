@@ -57,6 +57,7 @@ import com.ninhttd.moneycatcher.di.SessionManager
 import com.ninhttd.moneycatcher.ui.theme.ColorColdPurplePink
 import com.ninhttd.moneycatcher.ui.theme.ColorOnSurfaceDark
 import com.ninhttd.moneycatcher.ui.theme.ColorOnSurfaceVariantDark
+import com.ninhttd.moneycatcher.ui.theme.ColorPinkPrimaryContainer
 
 
 @Composable
@@ -80,7 +81,7 @@ fun LoginScreen(
             viewModel.reset() // đừng quên reset lại uiState sau navigate
         }
     }
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize().background(ColorPinkPrimaryContainer)) {
         Column(
             modifier = modifier
                 .fillMaxWidth()
